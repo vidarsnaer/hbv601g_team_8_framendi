@@ -11,8 +11,6 @@ class ChatOverviewActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
 
-    private var counter = 4.toLong()
-
     private var conversation1 = Conversation(1, 2, 1, false, "Liverpool")
     private var conversation2 = Conversation(2, 1, 2, false, "Chat 2")
     private var conversation3 = Conversation(3, 1, 3, false, "ch3")

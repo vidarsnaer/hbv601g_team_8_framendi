@@ -9,11 +9,11 @@ class ChatAdapter(private val dataset: List<Message>, private val currentUserId:
     RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
 
     class ChatViewHolder(private val binding: ChatItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(message: Message, isCurrentUser: Boolean) {
+        fun bind(message: Message, currentUserId: Long) {
             binding.messageText.text = message.message
             val layoutParams = binding.messageText.layoutParams as ConstraintLayout.LayoutParams
 
-            if (isCurrentUser) {
+            if (message.senderId == currentUserId) {
                 // Align to the right for the current user's messages
                 layoutParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
                 layoutParams.startToStart = ConstraintLayout.LayoutParams.UNSET
@@ -35,8 +35,8 @@ class ChatAdapter(private val dataset: List<Message>, private val currentUserId:
 
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         val message = dataset[position]
-        val isCurrentUser = message.senderId == currentUserId
-        holder.bind(message, isCurrentUser)
+        //val isCurrentUser = message.senderId == currentUserId
+        holder.bind(message, currentUserId)
     }
 
     override fun getItemCount() = dataset.size
