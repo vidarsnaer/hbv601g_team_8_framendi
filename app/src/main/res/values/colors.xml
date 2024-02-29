@@ -10,4 +10,6 @@
     <color name="Lavender">#8692f7</color>
     <color name="almost_black">#06050b</color>
     <color name="button">#06050b</color>
+    <color name="message_incoming">#FFCC80</color>
+    <color name="incoming_message_background">#BBDEFB</color>
 </resources>
