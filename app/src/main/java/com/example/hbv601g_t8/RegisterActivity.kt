@@ -31,12 +31,13 @@ class RegisterActivity :AppCompatActivity(){
 
 
         registerButton.setOnClickListener {
+            val dummyId = 2
             val enteredUsername = username.text.toString()
             val enteredEmail = email.text.toString()
             val enteredPassword = password.text.toString()
 
             // Simulate storing the registration data in SharedPreferences
-            val newUser = User(enteredUsername, enteredEmail, enteredPassword)
+            val newUser = User(dummyId, enteredUsername, enteredEmail, enteredPassword)
             saveUser(newUser, applicationContext)
 
             Toast.makeText(this, "Registration Successful!", Toast.LENGTH_SHORT).show()
@@ -51,6 +52,7 @@ class RegisterActivity :AppCompatActivity(){
     fun saveUser(user: User, context: Context) {
         val sharedPreferences = context.getSharedPreferences("UserData", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
+        editor.putInt("userId", user.id)
         editor.putString("username", user.name)
         editor.putString("email", user.email)
         editor.putString("password", user.password)
