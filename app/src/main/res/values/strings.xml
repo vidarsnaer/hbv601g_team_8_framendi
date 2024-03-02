@@ -49,4 +49,14 @@
     <string name="Login">Login</string>
     <string name="email">Email</string>
     <string name="register">Register</string>
+    <string name="go_to_messages">Go to messages</string>
+    <string name="open_nav">Open Navigation Drawer</string>
+    <string name="close_nav">Close Navigation Drawer</string>
+    <string name="color">Color</string>
+    <string name="type">Type</string>
+    <string name="condition">Condition</string>
+    <string name="price">Price</string>
+    <string name="images">images</string>
+    <string name="go_to_next_image">Go to next image</string>
+    <string name="go_to_previous_image">Go to previous image</string>
 </resources>
