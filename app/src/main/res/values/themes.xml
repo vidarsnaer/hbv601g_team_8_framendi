@@ -6,4 +6,10 @@
     </style>
 
     <style name="Theme.Hbv601g_t8" parent="Base.Theme.Hbv601g_t8" />
+
+    <style name="Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">?android:attr/listDivider</item>
+    </style>
 </resources>
