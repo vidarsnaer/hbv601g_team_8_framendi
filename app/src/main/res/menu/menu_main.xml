@@ -5,22 +5,18 @@
 
     <item
         android:id="@+id/nav_home"
-        android:icon="@drawable/baseline_home_24"
         android:title="Home"/>
 
     <item
         android:id="@+id/nav_settings"
-        android:icon="@drawable/baseline_miscellaneous_services_24"
         android:title="Settings"/>
 
     <item
         android:id="@+id/nav_favorites"
-        android:icon="@drawable/baseline_favorite_24"
         android:title="Favorites"/>
 
     <item
         android:id="@+id/nav_logout"
-        android:icon="@drawable/baseline_logout_24"
         android:title="Logout"/>
 
 </menu>
