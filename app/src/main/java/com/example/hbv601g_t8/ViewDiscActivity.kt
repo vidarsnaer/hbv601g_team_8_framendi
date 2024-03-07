@@ -17,7 +17,7 @@ class ViewDiscActivity: AppCompatActivity() {
     private lateinit var type : TextView
     private lateinit var color : TextView
     private lateinit var description : TextView
-    //private lateinit var newArrayList: ArrayList<Disc>
+    private lateinit var newArrayList: ArrayList<Disc>
     private lateinit var nextImage : Button
     private lateinit var prevImage : Button
     private lateinit var image : ImageView
@@ -26,14 +26,14 @@ class ViewDiscActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?)  {
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.disc_overview)
+        setContentView(R.layout.disc_overview)
 
         val bundle = intent.extras
         if (bundle != null) {
             discid = bundle.getInt("discid")
         }
 
-        /*newArrayList = arrayListOf(
+        newArrayList = arrayListOf(
             Disc(1, "used", "red disc slightly used", "Red Driver", 1000, "driver", 1, "red"),
             Disc(2, "used", "pink disc which is new", "Pink Driver", 1000, "driver", 1, "pink"),
             Disc(3, "used", "driver disc, not used", "Driver", 1000, "driver", 1, "black")
@@ -65,7 +65,7 @@ class ViewDiscActivity: AppCompatActivity() {
 
         prevImage.setOnClickListener{
             Toast.makeText(this, "Previous image", Toast.LENGTH_SHORT).show()
-        }*/
+        }
 
 
     }

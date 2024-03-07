@@ -16,7 +16,7 @@ class DiscListFragment : Fragment() {
 
     private var _binding: DiscListFragmentBinding? = null
 
-    //private lateinit var newArrayList: ArrayList<Disc>
+    private lateinit var newArrayList: ArrayList<Disc>
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -29,14 +29,14 @@ class DiscListFragment : Fragment() {
 
         _binding = DiscListFragmentBinding.inflate(inflater, container, false)
 
-        /*newArrayList = arrayListOf(
+        newArrayList = arrayListOf(
             Disc(1, "used", "red disc slightly used", "Red Driver", 1000, "driver", 1, "red"),
             Disc(2, "used", "pink disc which is new", "Pink Driver", 1000, "driver", 1, "pink"),
             Disc(3, "used", "driver disc, not used", "Driver", 1000, "driver", 1, "black")
-        )*/
+        )
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        //binding.recyclerView.adapter = DiscAdapter(newArrayList)
+        binding.recyclerView.adapter = DiscAdapter(newArrayList)
 
         return binding.root
     }
