@@ -2,6 +2,7 @@ package com.example.hbv601g_t8
 
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
@@ -12,6 +13,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
 import android.widget.EditText
+import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +24,8 @@ class SettingsActivity :AppCompatActivity(){
     private lateinit var changeEmail : Button
     private lateinit var changePassword : Button
     private val USER_ID = "userid"
+    private lateinit var loggedInUser : User
+
     override fun onCreate(savedInstanceState: Bundle?)  {
         super.onCreate(savedInstanceState)
 
@@ -31,13 +35,13 @@ class SettingsActivity :AppCompatActivity(){
         val userId = prefs.getInt(USER_ID, 0)
 
         // TODO: Get user from db with this id, will use dummy data now
-        val newUser = User(1, "user", "user@user.is", "123")
+        loggedInUser = User(1, "user", "user@user.is", "123")
 
         val username = findViewById<TextView>(R.id.username)
-        username.text = newUser.name
+        username.text = loggedInUser.name
 
         val email = findViewById<TextView>(R.id.email)
-        email.text = newUser.email
+        email.text = loggedInUser.email
 
         changeUsername = findViewById(R.id.change_username)
         changeUsername.paintFlags = changeUsername.paintFlags or Paint.UNDERLINE_TEXT_FLAG
@@ -66,12 +70,24 @@ class SettingsActivity :AppCompatActivity(){
         dialog.setContentView(R.layout.editname_dialog)
 
         val saveUsername: Button = dialog.findViewById(R.id.save_username)
-        saveUsername.setOnClickListener {
-            // TODO: update username
-            Toast.makeText(this, "Username updated", Toast.LENGTH_SHORT).show()
-            dialog.hide()
-        }
+        saveUsername.setOnClickListener( View.OnClickListener {
+            val usernameEditText = dialog.findViewById<EditText>(R.id.new_username)
+            val newName = usernameEditText.text.toString()
+            if (newName == ""){
+                Toast.makeText(this, "Please give a username", Toast.LENGTH_SHORT).show()
+            }
+            else{
+                // TODO: update username in db
+                loggedInUser.name = newName
 
+                val username = findViewById<TextView>(R.id.username)
+                username.text = newName
+
+                dialog.dismiss()
+                Toast.makeText(this, "Username updated", Toast.LENGTH_SHORT).show()
+            }
+
+        })
         startDialog(dialog)
     }
 }

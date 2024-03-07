@@ -9,7 +9,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/username"
+        android:id="@+id/new_username"
         android:background="@drawable/custom_login"
         android:layout_marginTop="40dp"
         android:layout_marginStart="15dp"
@@ -18,12 +18,13 @@
         android:padding="8dp"
         android:hint="@string/username"
         android:textColor="@color/black"
-        />
+        android:autofillHints=""
+        android:inputType="textPersonName" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="@string/save"
         android:id="@+id/save_username"
         android:backgroundTint="@color/Lavender"
         android:layout_marginStart="15dp"
