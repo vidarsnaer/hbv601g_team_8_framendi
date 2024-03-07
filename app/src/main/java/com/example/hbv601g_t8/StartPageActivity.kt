@@ -57,7 +57,7 @@ class StartPageActivity:AppCompatActivity(){
     /***
      * checks login state from SharedPreferences
      */
-    fun isLoggedIn(): Boolean {
+    private fun isLoggedIn(): Boolean {
         val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         return prefs.getBoolean(KEY_IS_LOGGED_IN, false)
     }

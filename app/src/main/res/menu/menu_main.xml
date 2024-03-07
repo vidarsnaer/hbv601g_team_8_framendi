@@ -2,9 +2,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.hbv601g_t8.DiscActivity">
+
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:id="@+id/nav_home"
+        android:title="Home"/>
+
+    <item
+        android:id="@+id/nav_settings"
+        android:title="Settings"/>
+
+    <item
+        android:id="@+id/nav_favorites"
+        android:title="Favorites"/>
+
+    <item
+        android:id="@+id/nav_logout"
+        android:title="Logout"/>
+
 </menu>
