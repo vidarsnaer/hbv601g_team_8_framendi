@@ -12,4 +12,5 @@
     <color name="button">#06050b</color>
     <color name="message_incoming">#FFCC80</color>
     <color name="incoming_message_background">#BBDEFB</color>
+    <color name="danger">#cf0000</color>
 </resources>

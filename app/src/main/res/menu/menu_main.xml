@@ -5,18 +5,18 @@
 
     <item
         android:id="@+id/nav_home"
-        android:title="Home"/>
+        android:title="@string/home"/>
 
     <item
         android:id="@+id/nav_settings"
-        android:title="Settings"/>
+        android:title="@string/settings"/>
 
     <item
         android:id="@+id/nav_favorites"
-        android:title="Favorites"/>
+        android:title="@string/favorites"/>
 
     <item
         android:id="@+id/nav_logout"
-        android:title="Logout"/>
+        android:title="@string/logout"/>
 
 </menu>

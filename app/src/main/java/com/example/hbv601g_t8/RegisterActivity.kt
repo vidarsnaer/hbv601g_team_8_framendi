@@ -18,6 +18,7 @@ class RegisterActivity :AppCompatActivity(){
     private lateinit var email : EditText
     private lateinit var password : EditText
     private lateinit var registerButton : Button
+    private val USER_ID = "userid"
     override fun onCreate(savedInstanceState: Bundle?)  {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.register)
@@ -49,13 +50,11 @@ class RegisterActivity :AppCompatActivity(){
     /**
      * Save user to sharepoint, which will later be a database
      */
-    fun saveUser(user: User, context: Context) {
+    private fun saveUser(user: User, context: Context) {
         val sharedPreferences = context.getSharedPreferences("UserData", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        editor.putInt("userId", user.id)
-        editor.putString("username", user.name)
-        editor.putString("email", user.email)
-        editor.putString("password", user.password)
+
+        editor.putInt(USER_ID, user.id)
         editor.apply()
     }
 

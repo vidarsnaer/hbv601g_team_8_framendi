@@ -24,6 +24,11 @@ class StartPageActivity:AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?)  {
         super.onCreate(savedInstanceState)
 
+        /*val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.clear()
+        editor.apply()*/
+
         if (isLoggedIn()) {
             redirectToHome()
         }
@@ -33,12 +38,7 @@ class StartPageActivity:AppCompatActivity(){
 
         loginButton = findViewById(R.id.loginButton)
         registerButton = findViewById(R.id.registerButton)
-/*
 
-        val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.clear()
-        editor.apply()*/
 
 
 

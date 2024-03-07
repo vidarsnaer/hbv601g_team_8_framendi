@@ -10,13 +10,13 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.ViewUtils
-import com.example.hbv601g_t8.databinding.ActivityMainBinding
 
 class LoginActivity :AppCompatActivity(){
 
     // Constants for SharedPreferences
     private val PREFS_NAME = "MyPrefs"
     private val KEY_IS_LOGGED_IN = "isLoggedIn"
+    private val USER_ID = "userid"
 
 
     private lateinit var username : EditText
@@ -52,6 +52,7 @@ class LoginActivity :AppCompatActivity(){
     private fun setLoggedInState(isLoggedIn: Boolean) {
         val editor = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
         editor.putBoolean(KEY_IS_LOGGED_IN, isLoggedIn)
+        editor.putInt(USER_ID, 1)
         editor.apply()
     }
 
