@@ -9,12 +9,22 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
 
 class NewDiscActivity : AppCompatActivity() {
@@ -23,12 +33,16 @@ class NewDiscActivity : AppCompatActivity() {
     private lateinit var btnChoose: Button
     private lateinit var viewImage: ImageView
     private lateinit var filePhoto: File
+    private lateinit var stateSpinner: Spinner
+    private lateinit var typeSpinner: Spinner
+    private lateinit var submitButton: Button
+    private lateinit var selectedType: String
+    private lateinit var selectedState: String
+    private lateinit var addNewDiscB: FloatingActionButton
     private val FILE_NAME = "photo.jpg"
     private val IMAGE_CHOOSE = 1000
     private val PERMISSION_CODE = 1001
     private val REQUEST_CODE = 7
-
-
 
     /**
      * Called when the activity is first created.
@@ -38,6 +52,7 @@ class NewDiscActivity : AppCompatActivity() {
      *
      * @param savedInstanceState The saved instance state Bundle, if any.
      */
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.newdisc)
@@ -45,6 +60,13 @@ class NewDiscActivity : AppCompatActivity() {
         buttonPhoto = findViewById(R.id.buttonPhoto)
         btnChoose = findViewById(R.id.btnChoose)
         viewImage = findViewById(R.id.viewImage)
+        stateSpinner = findViewById(R.id.stateSpinner)
+
+
+        /*val newDiscFab: FloatingActionButton = findViewById(R.id.addNewDiscButton)
+        newDiscFab.setOnClickListener {
+            redirectToNewDiscActivity()
+        }*/
 
         buttonPhoto.setOnClickListener {
             val takePhotoIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -71,6 +93,62 @@ class NewDiscActivity : AppCompatActivity() {
                 chooseImageGallery()
             }
         }
+
+        // Populate the state spinner
+        val states = arrayOf("New", "Used")
+        val stateAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, states)
+        stateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        //stateSpinner.adapter = stateAdapter
+
+        val stateSpinner: Spinner = findViewById(R.id.stateSpinner)
+        stateSpinner.adapter = stateAdapter
+
+        // Set selected state when an item is selected
+        stateSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedState = states[position]
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Do nothing
+            }
+        }
+
+        // Populate the state spinner
+        val discTypes = arrayOf("Putter", "Mid-Range", "Fairway Driver", "Distance Driver")
+        val typeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, discTypes)
+        stateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        //stateSpinner.adapter = stateAdapter
+
+        val typeSpinner: Spinner = findViewById(R.id.typeSpinner)
+        typeSpinner.adapter = typeAdapter
+
+        // Set selected state when an item is selected
+        typeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedType = discTypes[position]
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Do nothing
+            }
+        }
+
+        /*submitButton.setOnClickListener {
+            val description = descriptionText.text.toString()
+            val title = titleText.text.toString()
+            val color = colorText.text.toString()
+            val price = priceText.text.toString().toDoubleOrNull() ?: 0.0
+            val quantity = quantityText.text.toString().toDoubleOrNull() ?: 0.0
+
+            //Send this info to the database
+            val discInfo = "$selectedState, $title, $description, $price, $selectedType, $quantity, $color"
+        }*/
+    }
+
+    private fun redirectToNewDiscActivity() {
+        val intent = Intent(this, NewDiscActivity::class.java)
+        startActivity(intent)
     }
 
 

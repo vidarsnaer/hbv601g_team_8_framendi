@@ -42,6 +42,12 @@ class DiscActivity : AppCompatActivity() {
                 //.apply {putExtra("USER_ID", currentUserId) }
             startActivity(intent)
         }
+
+        binding.addNewDiscButton.setOnClickListener {
+            val intent = Intent(this@DiscActivity, NewDiscActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

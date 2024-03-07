@@ -13,8 +13,8 @@
 
     <ImageView
         android:id="@+id/viewImage"
-        android:layout_width="match_parent"
-        android:layout_height="305dp"
+        android:layout_width="264dp"
+        android:layout_height="wrap_content"
         app:srcCompat="@mipmap/ic_launcher" />
 
     <Button
@@ -31,6 +31,22 @@
         android:layout_height="71dp"
         android:layout_marginTop="30dp"
         android:text="Choose Photo"
+        android:textSize="18sp"/>
+
+    <Spinner
+        android:id="@+id/stateSpinner"
+        android:layout_width="273dp"
+        android:layout_height="71dp"
+        android:layout_marginTop="30dp"
+        android:text="Disc state"
+        android:textSize="18sp"/>
+
+    <Spinner
+        android:id="@+id/typeSpinner"
+        android:layout_width="273dp"
+        android:layout_height="71dp"
+        android:layout_marginTop="30dp"
+        android:text="Disc Type"
         android:textSize="18sp"/>
 
 </LinearLayout>
