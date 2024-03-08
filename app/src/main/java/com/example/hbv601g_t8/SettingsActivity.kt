@@ -23,7 +23,10 @@ class SettingsActivity :AppCompatActivity(){
     private lateinit var changeUsername : Button
     private lateinit var changeEmail : Button
     private lateinit var changePassword : Button
+    private lateinit var deleteAccount : Button
     private val USER_ID = "userid"
+    private val PREFS_NAME = "MyPrefs"
+    private val KEY_IS_LOGGED_IN = "isLoggedIn"
     private lateinit var loggedInUser : User
 
     override fun onCreate(savedInstanceState: Bundle?)  {
@@ -35,7 +38,7 @@ class SettingsActivity :AppCompatActivity(){
         val userId = prefs.getInt(USER_ID, 0)
 
         // TODO: Get user from db with this id, will use dummy data now
-        loggedInUser = User(1, "user", "user@user.is", "123")
+        loggedInUser = User(userId, "user", "user@user.is", "123")
 
         val username = findViewById<TextView>(R.id.username)
         username.text = loggedInUser.name
@@ -51,9 +54,20 @@ class SettingsActivity :AppCompatActivity(){
 
         changeEmail = findViewById(R.id.change_email)
         changeEmail.paintFlags = changeEmail.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        changeEmail.setOnClickListener{
+            showEmailDialog()
+        }
 
         changePassword = findViewById(R.id.change_password)
         changePassword.paintFlags = changePassword.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        changePassword.setOnClickListener{
+            showPasswordDialog()
+        }
+
+        deleteAccount = findViewById(R.id.delete_account)
+        deleteAccount.setOnClickListener{
+            showDeleteDialog()
+        }
     }
 
     private fun startDialog(dialog: Dialog){
@@ -86,7 +100,102 @@ class SettingsActivity :AppCompatActivity(){
                 dialog.dismiss()
                 Toast.makeText(this, "Username updated", Toast.LENGTH_SHORT).show()
             }
+        })
+        startDialog(dialog)
+    }
 
+    private fun showEmailDialog(){
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.editemail_dialog)
+
+        val saveEmail: Button = dialog.findViewById(R.id.save_email)
+        saveEmail.setOnClickListener( View.OnClickListener {
+            val currentEmail = dialog.findViewById<EditText>(R.id.current_email)
+            val newEmail = dialog.findViewById<EditText>(R.id.new_email)
+            val currentEmailS = currentEmail.text.toString()
+            val newEmailS = newEmail.text.toString()
+            if (currentEmailS == ""){
+                Toast.makeText(this, "Please give your current email", Toast.LENGTH_SHORT).show()
+            }
+            else if( newEmailS == ""){
+                Toast.makeText(this, "Please give your new email", Toast.LENGTH_SHORT).show()
+            }
+            else{
+                // TODO: update email in db
+                loggedInUser.name = newEmailS
+
+                val email = findViewById<TextView>(R.id.email)
+                email.text = newEmailS
+
+                dialog.dismiss()
+                Toast.makeText(this, "Email updated", Toast.LENGTH_SHORT).show()
+            }
+        })
+        startDialog(dialog)
+    }
+
+    private fun showPasswordDialog(){
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.editpassword_dialog)
+
+        val savePassword: Button = dialog.findViewById(R.id.save_password)
+        savePassword.setOnClickListener( View.OnClickListener {
+            val currentPassword = dialog.findViewById<EditText>(R.id.current_password)
+            val newPassword = dialog.findViewById<EditText>(R.id.new_password1)
+            val confirmPassword = dialog.findViewById<EditText>(R.id.new_password2)
+            val currentPasswordS = currentPassword.text.toString()
+            val newPasswordS = newPassword.text.toString()
+            val confirmPasswordS = confirmPassword.text.toString()
+
+            if (currentPasswordS == ""){
+                Toast.makeText(this, "Please give your current password", Toast.LENGTH_SHORT).show()
+            }
+            else if( newPasswordS == "" || confirmPasswordS == ""){
+                Toast.makeText(this, "Please give your new password", Toast.LENGTH_SHORT).show()
+            }
+            else if( currentPasswordS != loggedInUser.password){
+                Toast.makeText(this, "incorrect password", Toast.LENGTH_SHORT).show()
+            }
+            else if( newPasswordS != confirmPasswordS){
+                Toast.makeText(this, "New password does not match", Toast.LENGTH_SHORT).show()
+            }
+            else{
+                // TODO: update password in db
+
+                dialog.dismiss()
+                Toast.makeText(this, "Password updated", Toast.LENGTH_SHORT).show()
+            }
+        })
+        startDialog(dialog)
+    }
+
+    private fun showDeleteDialog(){
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.delete_account_dialog)
+
+        val delete: Button = dialog.findViewById(R.id.delete)
+        delete.setOnClickListener( View.OnClickListener {
+            val password = dialog.findViewById<EditText>(R.id.delete_password)
+            val passwordS = password.text.toString()
+
+            if (passwordS != loggedInUser.password){
+                Toast.makeText(this, "Incorrect password", Toast.LENGTH_SHORT).show()
+            }
+            else{
+                // TODO: delete account in db
+
+                val editor = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
+                editor.putBoolean(KEY_IS_LOGGED_IN, false)
+                editor.apply()
+
+                // go to the start page
+                val intent = Intent(this@SettingsActivity, StartPageActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
         })
         startDialog(dialog)
     }

@@ -14,7 +14,8 @@
         android:id="@+id/toolbar"
         android:background="@color/Lavender"
         android:fitsSystemWindows="true"
-        app:title="Settings">
+        app:title="Settings"
+        app:titleTextColor="@color/white">
     </androidx.appcompat.widget.Toolbar>
 
     <androidx.constraintlayout.widget.ConstraintLayout

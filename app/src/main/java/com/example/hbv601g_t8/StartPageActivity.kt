@@ -34,24 +34,21 @@ class StartPageActivity:AppCompatActivity(){
         }
         else{
             setContentView(R.layout.start_screen)
+            loginButton = findViewById(R.id.loginButton)
+            registerButton = findViewById(R.id.registerButton)
+
+            loginButton.setOnClickListener{
+                val intent = Intent(this@StartPageActivity, LoginActivity::class.java)
+                startActivity(intent)
+            }
+
+            registerButton.setOnClickListener {
+                val intent = Intent(this@StartPageActivity, RegisterActivity::class.java)
+                startActivity(intent)
+
+            }
         }
 
-        loginButton = findViewById(R.id.loginButton)
-        registerButton = findViewById(R.id.registerButton)
-
-
-
-
-        loginButton.setOnClickListener{
-            val intent = Intent(this@StartPageActivity, LoginActivity::class.java)
-            startActivity(intent)
-        }
-
-        registerButton.setOnClickListener {
-            val intent = Intent(this@StartPageActivity, RegisterActivity::class.java)
-            startActivity(intent)
-
-        }
     }
 
     /***

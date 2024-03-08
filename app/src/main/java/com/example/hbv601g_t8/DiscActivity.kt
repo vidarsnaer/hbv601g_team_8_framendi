@@ -1,5 +1,6 @@
 package com.example.hbv601g_t8
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
@@ -17,6 +18,10 @@ class DiscActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private val PREFS_NAME = "MyPrefs"
+    private val KEY_IS_LOGGED_IN = "isLoggedIn"
+    private val USER_ID = "userid"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +69,14 @@ class DiscActivity : AppCompatActivity() {
             R.id.nav_settings -> {
                 // Perform action when your menu item is clicked
                 startActivity(Intent(this, SettingsActivity::class.java))
+                true
+            }
+            R.id.nav_logout -> {
+                val editor = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
+                editor.putBoolean(KEY_IS_LOGGED_IN, false)
+                editor.apply()
+                val intent = Intent(this@DiscActivity, StartPageActivity::class.java)
+                startActivity(intent)
                 true
             }
             else -> super.onOptionsItemSelected(item)
