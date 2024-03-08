@@ -21,6 +21,7 @@ class ViewDiscActivity: AppCompatActivity() {
     private lateinit var nextImage : Button
     private lateinit var prevImage : Button
     private lateinit var image : ImageView
+    private lateinit var messageOwner : Button
 
 
 
@@ -65,6 +66,13 @@ class ViewDiscActivity: AppCompatActivity() {
 
         prevImage.setOnClickListener{
             Toast.makeText(this, "Previous image", Toast.LENGTH_SHORT).show()
+        }
+
+        messageOwner = findViewById(R.id.message_owner)
+        messageOwner.setOnClickListener{
+
+            //TODO: Message owner function
+            Toast.makeText(this, "Message owner", Toast.LENGTH_SHORT).show()
         }
 
 
