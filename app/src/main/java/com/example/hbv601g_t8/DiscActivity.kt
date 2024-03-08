@@ -18,10 +18,6 @@ class DiscActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-    private val PREFS_NAME = "MyPrefs"
-    private val KEY_IS_LOGGED_IN = "isLoggedIn"
-    private val USER_ID = "userid"
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,8 +68,8 @@ class DiscActivity : AppCompatActivity() {
                 true
             }
             R.id.nav_logout -> {
-                val editor = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
-                editor.putBoolean(KEY_IS_LOGGED_IN, false)
+                val editor = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE).edit()
+                editor.putBoolean(GlobalVariables.KEY_IS_LOGGED_IN, false)
                 editor.apply()
                 val intent = Intent(this@DiscActivity, StartPageActivity::class.java)
                 startActivity(intent)

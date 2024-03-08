@@ -18,7 +18,6 @@ class RegisterActivity :AppCompatActivity(){
     private lateinit var email : EditText
     private lateinit var password : EditText
     private lateinit var registerButton : Button
-    private val USER_ID = "userid"
     override fun onCreate(savedInstanceState: Bundle?)  {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.register)
@@ -54,7 +53,7 @@ class RegisterActivity :AppCompatActivity(){
         val sharedPreferences = context.getSharedPreferences("UserData", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
-        editor.putInt(USER_ID, user.id)
+        editor.putInt(GlobalVariables.USER_ID, user.id)
         editor.apply()
     }
 

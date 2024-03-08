@@ -24,9 +24,6 @@ class SettingsActivity :AppCompatActivity(){
     private lateinit var changeEmail : Button
     private lateinit var changePassword : Button
     private lateinit var deleteAccount : Button
-    private val USER_ID = "userid"
-    private val PREFS_NAME = "MyPrefs"
-    private val KEY_IS_LOGGED_IN = "isLoggedIn"
     private lateinit var loggedInUser : User
 
     override fun onCreate(savedInstanceState: Bundle?)  {
@@ -34,8 +31,8 @@ class SettingsActivity :AppCompatActivity(){
 
         setContentView(R.layout.settings)
 
-        val prefs = getSharedPreferences(USER_ID, Context.MODE_PRIVATE)
-        val userId = prefs.getInt(USER_ID, 0)
+        val prefs = getSharedPreferences(GlobalVariables.USER_ID, Context.MODE_PRIVATE)
+        val userId = prefs.getInt(GlobalVariables.USER_ID, 0)
 
         // TODO: Get user from db with this id, will use dummy data now
         loggedInUser = User(userId, "user", "user@user.is", "123")
@@ -70,6 +67,10 @@ class SettingsActivity :AppCompatActivity(){
         }
     }
 
+
+    /**
+     * opens the dialog which is sent through
+     */
     private fun startDialog(dialog: Dialog){
         dialog.show()
         dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -77,6 +78,10 @@ class SettingsActivity :AppCompatActivity(){
         dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
         dialog.window?.setGravity(Gravity.BOTTOM)
     }
+
+    /**
+     * opens dialog to change username
+     */
 
     private fun showUsernameDialog(){
         val dialog = Dialog(this)
@@ -103,6 +108,10 @@ class SettingsActivity :AppCompatActivity(){
         })
         startDialog(dialog)
     }
+
+    /**
+     * opens the dialog to change email
+     */
 
     private fun showEmailDialog(){
         val dialog = Dialog(this)
@@ -135,6 +144,9 @@ class SettingsActivity :AppCompatActivity(){
         startDialog(dialog)
     }
 
+    /**
+     * opens the dialog to change your password
+     */
     private fun showPasswordDialog(){
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -171,6 +183,9 @@ class SettingsActivity :AppCompatActivity(){
         startDialog(dialog)
     }
 
+    /**
+     * Opens the dialog to delete your account
+     */
     private fun showDeleteDialog(){
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -187,8 +202,8 @@ class SettingsActivity :AppCompatActivity(){
             else{
                 // TODO: delete account in db
 
-                val editor = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
-                editor.putBoolean(KEY_IS_LOGGED_IN, false)
+                val editor = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE).edit()
+                editor.putBoolean(GlobalVariables.KEY_IS_LOGGED_IN, false)
                 editor.apply()
 
                 // go to the start page

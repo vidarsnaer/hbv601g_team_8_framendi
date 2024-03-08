@@ -18,11 +18,9 @@ class StartPageActivity:AppCompatActivity(){
     private lateinit var loginButton : Button
     private lateinit var registerButton : Button
 
-    private val PREFS_NAME = "MyPrefs"
-    private val KEY_IS_LOGGED_IN = "isLoggedIn"
-
     override fun onCreate(savedInstanceState: Bundle?)  {
         super.onCreate(savedInstanceState)
+
 
         /*val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
@@ -55,8 +53,8 @@ class StartPageActivity:AppCompatActivity(){
      * checks login state from SharedPreferences
      */
     private fun isLoggedIn(): Boolean {
-        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return prefs.getBoolean(KEY_IS_LOGGED_IN, false)
+        val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getBoolean(GlobalVariables.KEY_IS_LOGGED_IN, false)
     }
 
     /**
