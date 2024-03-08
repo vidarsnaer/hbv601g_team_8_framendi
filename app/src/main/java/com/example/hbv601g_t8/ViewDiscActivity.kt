@@ -1,12 +1,16 @@
 package com.example.hbv601g_t8
 
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 
 class ViewDiscActivity: AppCompatActivity() {
 
@@ -22,6 +26,9 @@ class ViewDiscActivity: AppCompatActivity() {
     private lateinit var prevImage : Button
     private lateinit var image : ImageView
     private lateinit var messageOwner : Button
+    private lateinit var favorites : Button
+
+    private var inFavorites = -1
 
 
 
@@ -73,6 +80,20 @@ class ViewDiscActivity: AppCompatActivity() {
 
             //TODO: Message owner function
             Toast.makeText(this, "Message owner", Toast.LENGTH_SHORT).show()
+        }
+
+        favorites = findViewById(R.id.favorite)
+        favorites.setOnClickListener{
+            if(inFavorites == -1){
+                favorites.setBackgroundResource(R.drawable.baseline_favorite_24)
+                Toast.makeText(this, "Added to favorites", Toast.LENGTH_SHORT).show()
+                //TODO: add to favorites
+            } else {
+                favorites.setBackgroundResource(R.drawable.baseline_favorite_border_24)
+                Toast.makeText(this, "Removed favorites", Toast.LENGTH_SHORT).show()
+                //TODO: remove from favorites
+            }
+            inFavorites *= -1
         }
 
 
