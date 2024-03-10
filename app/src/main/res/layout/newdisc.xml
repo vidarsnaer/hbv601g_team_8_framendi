@@ -20,33 +20,83 @@
     <Button
         android:id="@+id/buttonPhoto"
         android:layout_width="273dp"
-        android:layout_height="71dp"
-        android:layout_marginTop="30dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="15dp"
         android:text="Take Photo"
         android:textSize="18sp" />
 
     <Button
         android:id="@+id/btnChoose"
         android:layout_width="273dp"
-        android:layout_height="71dp"
-        android:layout_marginTop="30dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="15dp"
         android:text="Choose Photo"
         android:textSize="18sp"/>
+
+    <EditText
+        android:id="@+id/newDiscTitle"
+        android:layout_width="273dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="15dp"
+        android:text=""
+        android:textSize="12sp"/>
 
     <Spinner
         android:id="@+id/stateSpinner"
         android:layout_width="273dp"
-        android:layout_height="71dp"
-        android:layout_marginTop="30dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="15dp"
         android:text="Disc state"
-        android:textSize="18sp"/>
+        android:textSize="12sp"/>
 
     <Spinner
         android:id="@+id/typeSpinner"
         android:layout_width="273dp"
-        android:layout_height="71dp"
-        android:layout_marginTop="30dp"
-        android:text="Disc Type"
+        android:layout_height="41dp"
+        android:layout_marginTop="15dp"
+        android:hint="Disc Type"
+        android:textSize="12sp"/>
+
+    <EditText
+        android:id="@+id/newDiscColor"
+        android:layout_width="273dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="15dp"
+        android:hint="Color"
+        android:textSize="12sp"/>
+
+    <EditText
+        android:id="@+id/newDiscPrice"
+        android:layout_width="273dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="15dp"
+        android:hint="Price"
+        android:inputType="number"
+        android:textSize="12sp"/>
+
+    <EditText
+        android:id="@+id/newDiscDescription"
+        android:layout_width="273dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="15dp"
+        android:hint="Description"
+        android:textSize="12sp"/>
+
+    <EditText
+        android:id="@+id/newDiscQuantity"
+        android:layout_width="273dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="15dp"
+        android:hint="Quantity"
+        android:inputType="number"
+        android:textSize="12sp"/>
+
+    <Button
+        android:id="@+id/submitNewDiscButton"
+        android:layout_width="273dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="15dp"
+        android:text="Submit"
         android:textSize="18sp"/>
 
 </LinearLayout>

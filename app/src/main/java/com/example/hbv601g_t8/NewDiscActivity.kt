@@ -2,6 +2,7 @@ package com.example.hbv601g_t8
 
 import android.Manifest
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -17,14 +18,20 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.Composable
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import io.github.jan.supabase.postgrest.from
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 import java.io.File
 
 class NewDiscActivity : AppCompatActivity() {
@@ -35,10 +42,14 @@ class NewDiscActivity : AppCompatActivity() {
     private lateinit var filePhoto: File
     private lateinit var stateSpinner: Spinner
     private lateinit var typeSpinner: Spinner
-    private lateinit var submitButton: Button
+    private lateinit var submitNewDiscButton: Button
     private lateinit var selectedType: String
     private lateinit var selectedState: String
-    private lateinit var addNewDiscB: FloatingActionButton
+    private lateinit var titleText: EditText
+    private lateinit var colorText: EditText
+    private lateinit var priceText: EditText
+    private lateinit var descriptionText: EditText
+    private lateinit var quantityText: EditText
     private val FILE_NAME = "photo.jpg"
     private val IMAGE_CHOOSE = 1000
     private val PERMISSION_CODE = 1001
@@ -60,13 +71,12 @@ class NewDiscActivity : AppCompatActivity() {
         buttonPhoto = findViewById(R.id.buttonPhoto)
         btnChoose = findViewById(R.id.btnChoose)
         viewImage = findViewById(R.id.viewImage)
-        stateSpinner = findViewById(R.id.stateSpinner)
-
-
-        /*val newDiscFab: FloatingActionButton = findViewById(R.id.addNewDiscButton)
-        newDiscFab.setOnClickListener {
-            redirectToNewDiscActivity()
-        }*/
+        submitNewDiscButton = findViewById(R.id.submitNewDiscButton)
+        titleText = findViewById(R.id.newDiscTitle)
+        colorText = findViewById(R.id.newDiscColor)
+        priceText = findViewById(R.id.newDiscPrice)
+        descriptionText = findViewById(R.id.newDiscDescription)
+        quantityText = findViewById(R.id.newDiscQuantity)
 
         buttonPhoto.setOnClickListener {
             val takePhotoIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -110,7 +120,7 @@ class NewDiscActivity : AppCompatActivity() {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Do nothing
+                // do nothing
             }
         }
 
@@ -134,23 +144,49 @@ class NewDiscActivity : AppCompatActivity() {
             }
         }
 
-        /*submitButton.setOnClickListener {
+        @Serializable
+        data class NewDiscCreation (
+            val price: Int,
+            val condition: String,
+            val description: String,
+            val name: String,
+            val type: String,
+            val colour: String,
+            val user_id: Int
+        )
+
+        suspend fun insertProductIntoSupabase(newDiscCreation: NewDiscCreation) {
+            withContext(Dispatchers.IO) {
+                SupabaseManager.supabase.from("discs").insert(newDiscCreation)
+            }
+        }
+
+        submitNewDiscButton.setOnClickListener {
             val description = descriptionText.text.toString()
             val title = titleText.text.toString()
             val color = colorText.text.toString()
-            val price = priceText.text.toString().toDoubleOrNull() ?: 0.0
-            val quantity = quantityText.text.toString().toDoubleOrNull() ?: 0.0
+            val price = priceText.text.toString().toInt()
+            val quantity = quantityText.text.toString().toInt()
+            val state = selectedState
+            val type = selectedType
 
-            //Send this info to the database
-            val discInfo = "$selectedState, $title, $description, $price, $selectedType, $quantity, $color"
-        }*/
+            val newDisc = NewDiscCreation(
+                price,
+                state,
+                description,
+                title,
+                type,
+                color,
+                1
+            )
+
+            runBlocking {
+                insertProductIntoSupabase(newDisc)
+            }
+
+            Toast.makeText(this, "Disc successfully added", Toast.LENGTH_LONG).show()
+        }
     }
-
-    private fun redirectToNewDiscActivity() {
-        val intent = Intent(this, NewDiscActivity::class.java)
-        startActivity(intent)
-    }
-
 
     /**
      * Creates a temporary file to store the photo.
