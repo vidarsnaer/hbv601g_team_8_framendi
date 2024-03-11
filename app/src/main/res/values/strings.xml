@@ -78,4 +78,5 @@
     <string name="delete_account_warning">This will permanently delete your account, this action cannot be undone.</string>
     <string name="delete">Delete</string>
     <string name="message_owner">Message Owner</string>
+    <string name="add_to_favorites">Add to favorites</string>
 </resources>
