@@ -18,48 +18,43 @@ class StartPageActivity:AppCompatActivity(){
     private lateinit var loginButton : Button
     private lateinit var registerButton : Button
 
-    private val PREFS_NAME = "MyPrefs"
-    private val KEY_IS_LOGGED_IN = "isLoggedIn"
-
     override fun onCreate(savedInstanceState: Bundle?)  {
         super.onCreate(savedInstanceState)
+
+
+        /*val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.clear()
+        editor.apply()*/
 
         if (isLoggedIn()) {
             redirectToHome()
         }
         else{
             setContentView(R.layout.start_screen)
+            loginButton = findViewById(R.id.loginButton)
+            registerButton = findViewById(R.id.registerButton)
+
+            loginButton.setOnClickListener{
+                val intent = Intent(this@StartPageActivity, LoginActivity::class.java)
+                startActivity(intent)
+            }
+
+            registerButton.setOnClickListener {
+                val intent = Intent(this@StartPageActivity, RegisterActivity::class.java)
+                startActivity(intent)
+
+            }
         }
 
-        loginButton = findViewById(R.id.loginButton)
-        registerButton = findViewById(R.id.registerButton)
-/*
-
-        val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.clear()
-        editor.apply()*/
-
-
-
-        loginButton.setOnClickListener{
-            val intent = Intent(this@StartPageActivity, LoginActivity::class.java)
-            startActivity(intent)
-        }
-
-        registerButton.setOnClickListener {
-            val intent = Intent(this@StartPageActivity, RegisterActivity::class.java)
-            startActivity(intent)
-
-        }
     }
 
     /***
      * checks login state from SharedPreferences
      */
     private fun isLoggedIn(): Boolean {
-        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return prefs.getBoolean(KEY_IS_LOGGED_IN, false)
+        val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getBoolean(GlobalVariables.KEY_IS_LOGGED_IN, false)
     }
 
     /**

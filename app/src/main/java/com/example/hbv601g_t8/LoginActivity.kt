@@ -10,14 +10,8 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.ViewUtils
-import com.example.hbv601g_t8.databinding.ActivityMainBinding
 
 class LoginActivity :AppCompatActivity(){
-
-    // Constants for SharedPreferences
-    private val PREFS_NAME = "MyPrefs"
-    private val KEY_IS_LOGGED_IN = "isLoggedIn"
-
 
     private lateinit var username : EditText
     private lateinit var password : EditText
@@ -50,8 +44,9 @@ class LoginActivity :AppCompatActivity(){
      * Sets login state in SharedPreferences
      */
     private fun setLoggedInState(isLoggedIn: Boolean) {
-        val editor = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
-        editor.putBoolean(KEY_IS_LOGGED_IN, isLoggedIn)
+        val editor = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE).edit()
+        editor.putBoolean(GlobalVariables.KEY_IS_LOGGED_IN, isLoggedIn)
+        editor.putInt(GlobalVariables.USER_ID, 1)
         editor.apply()
     }
 
@@ -60,8 +55,8 @@ class LoginActivity :AppCompatActivity(){
      * checks login state from SharedPreferences
      */
     fun isLoggedIn(): Boolean {
-        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return prefs.getBoolean(KEY_IS_LOGGED_IN, false)
+        val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getBoolean(GlobalVariables.KEY_IS_LOGGED_IN, false)
     }
 
 

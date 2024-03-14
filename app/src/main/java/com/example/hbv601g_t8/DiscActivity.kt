@@ -1,5 +1,6 @@
 package com.example.hbv601g_t8
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
@@ -42,6 +43,12 @@ class DiscActivity : AppCompatActivity() {
                 //.apply {putExtra("USER_ID", currentUserId) }
             startActivity(intent)
         }
+
+        binding.addNewDiscButton.setOnClickListener {
+            val intent = Intent(this@DiscActivity, NewDiscActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -49,16 +56,34 @@ class DiscActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
-/*
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.nav_settings -> {
+                // Perform action when your menu item is clicked
+                startActivity(Intent(this, SettingsActivity::class.java))
+                true
+            }
+            R.id.nav_logout -> {
+                val editor = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE).edit()
+                editor.putBoolean(GlobalVariables.KEY_IS_LOGGED_IN, false)
+                editor.apply()
+                val intent = Intent(this@DiscActivity, StartPageActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            R.id.nav_favorites -> {
+                // Perform action when your menu item is clicked
+                startActivity(Intent(this, FavoriteActivity::class.java))
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
-    }*/
+
+    }
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)

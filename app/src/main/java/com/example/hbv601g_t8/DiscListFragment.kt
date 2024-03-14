@@ -39,7 +39,6 @@ class DiscListFragment : Fragment() {
         binding.recyclerView.adapter = DiscAdapter(newArrayList)
 
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

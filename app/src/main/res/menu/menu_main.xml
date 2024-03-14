@@ -4,23 +4,15 @@
     tools:context="com.example.hbv601g_t8.DiscActivity">
 
     <item
-        android:id="@+id/nav_home"
-        android:icon="@drawable/baseline_home_24"
-        android:title="Home"/>
+        android:id="@+id/nav_favorites"
+        android:title="@string/favorites"/>
 
     <item
         android:id="@+id/nav_settings"
-        android:icon="@drawable/baseline_miscellaneous_services_24"
-        android:title="Settings"/>
-
-    <item
-        android:id="@+id/nav_favorites"
-        android:icon="@drawable/baseline_favorite_24"
-        android:title="Favorites"/>
+        android:title="@string/settings"/>
 
     <item
         android:id="@+id/nav_logout"
-        android:icon="@drawable/baseline_logout_24"
-        android:title="Logout"/>
+        android:title="@string/logout"/>
 
 </menu>

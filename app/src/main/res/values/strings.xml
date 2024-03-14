@@ -59,4 +59,24 @@
     <string name="images">images</string>
     <string name="go_to_next_image">Go to next image</string>
     <string name="go_to_previous_image">Go to previous image</string>
+    <string name="change">Change</string>
+    <string name="user_name">User name:</string>
+    <string name="email_">Email:</string>
+    <string name="password_">Password:</string>
+    <string name="password_hidden">**********</string>
+    <string name="delete_account">Delete account</string>
+    <string name="favorites">Favorites</string>
+    <string name="logout">Logout</string>
+    <string name="settings">Settings</string>
+    <string name="home">Home</string>
+    <string name="save">Save</string>
+    <string name="current_email">Current email</string>
+    <string name="new_email">New email</string>
+    <string name="current_password">Current password</string>
+    <string name="new_password">New password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="delete_account_warning">This will permanently delete your account, this action cannot be undone.</string>
+    <string name="delete">Delete</string>
+    <string name="message_owner">Message Owner</string>
+    <string name="add_to_favorites">Add to favorites</string>
 </resources>

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".DiscActivity">
-    <androidx.appcompat.widget.Toolbar
+    <Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/toolbar"
@@ -22,23 +22,27 @@
             android:layout_marginTop="4dp"
             android:layout_marginEnd="12dp" />
 
-    </androidx.appcompat.widget.Toolbar>
+    </Toolbar>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar">
-        <fragment
-            android:id="@+id/nav_host_fragment_content_main"
-            android:name="androidx.navigation.fragment.NavHostFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/nav_graph"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <fragment
+        android:id="@+id/nav_host_fragment_content_main"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph"
+        android:layout_below="@id/toolbar"/>
 
 
+    <!--<androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/recyclerView"
+        android:layout_marginTop="8dp"
+        android:scrollbars="vertical"
+        android:layout_below="@id/toolbar"
+        tools:itemCount="10"
+        tools:listitem="@layout/item_view"/>-->
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -50,18 +54,4 @@
         android:layout_marginBottom="15dp"
         app:srcCompat="@android:drawable/sym_action_chat"
         android:contentDescription="@string/go_to_messages" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addNewDiscButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="333dp"
-        android:layout_marginBottom="20dp"
-        app:srcCompat="@android:drawable/ic_input_add"
-        android:tint="@android:color/white"
-        android:contentDescription="Add a new disc" />
-
 </RelativeLayout>
-
