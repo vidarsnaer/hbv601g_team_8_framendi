@@ -30,6 +30,10 @@ class ViewDiscActivity: AppCompatActivity() {
 
     private var inFavorites = -1
 
+    //TODO: nota rétt userId
+    private var currentUserId : Long = 1.toLong()
+    private var ownerId : Long = (-1).toLong()
+    private var conversationTitle : String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?)  {
@@ -42,9 +46,9 @@ class ViewDiscActivity: AppCompatActivity() {
         }
 
         newArrayList = arrayListOf(
-            Disc(1, "used", "red disc slightly used", "Red Driver", 1000, "driver", 1, "red"),
-            Disc(2, "used", "pink disc which is new", "Pink Driver", 1000, "driver", 1, "pink"),
-            Disc(3, "used", "driver disc, not used", "Driver", 1000, "driver", 1, "black")
+            Disc(1, "used", "red disc slightly used", "Red Driver", 1000, "driver", 3, "red"),
+            Disc(2, "used", "pink disc which is new", "Pink Driver", 1000, "driver", 4, "pink"),
+            Disc(3, "used", "driver disc, not used", "Driver", 1000, "driver", 2, "black")
         )
 
         val disc = newArrayList.find { it.discid == discid }
@@ -76,10 +80,23 @@ class ViewDiscActivity: AppCompatActivity() {
         }
 
         messageOwner = findViewById(R.id.message_owner)
-        messageOwner.setOnClickListener{
+        messageOwner.setOnClickListener {
+            if (disc != null) {
+                ownerId = disc.user_id.toLong()
+                //TODO: sækja nafn eiganda og nota sem conversationTitle
+                conversationTitle = disc.name
+            }
 
-            //TODO: Message owner function
-            Toast.makeText(this, "Message owner", Toast.LENGTH_SHORT).show()
+            val newConversationId = (ConversationManager.getConversations().maxByOrNull { it.conversationId }?.conversationId ?: 0) + 1
+
+            val newConversation = Conversation(newConversationId, currentUserId, ownerId, false, conversationTitle)
+            ConversationManager.addConversation(newConversation)
+
+            val intent = Intent(this, ChatActivity::class.java).apply {
+                putExtra("CHAT_ID", newConversationId)
+            }
+            startActivity(intent)
+            //Toast.makeText(this, "Message owner", Toast.LENGTH_SHORT).show()
         }
 
         favorites = findViewById(R.id.favorite)

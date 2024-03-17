@@ -1,6 +1,5 @@
 package com.example.hbv601g_t8
 
-import ChatAdapter
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -8,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.button.MaterialButton
 import java.time.ZonedDateTime
-import com.example.hbv601g_t8.Message
 
 class ChatActivity : AppCompatActivity() {
 
@@ -35,34 +33,32 @@ class ChatActivity : AppCompatActivity() {
         setContentView(R.layout.activity_chat)
 
         val chatId = intent.getLongExtra("CHAT_ID", -1) // Default value as -1
-        if (chatId == (-1).toLong()) {
-            println("skoða seinna")
-        }
-        chatMessages = dummyMessages.filter {it.conversationId == chatId} as ArrayList<Message>
+
+        //chatMessages = dummyMessages.filter {it.conversationId == chatId} as ArrayList<Message>
         //TODO: Sækja uppl. frá bakenda fyrir chatId
         recyclerView = findViewById<RecyclerView>(R.id.chatRecyclerView).apply {
             layoutManager = LinearLayoutManager(this@ChatActivity)
-            adapter = ChatAdapter(chatMessages, currentUserId)
+            //adapter = com.example.hbv601g_t8.ChatAdapter(chatMessages, currentUserId)
+            adapter = ChatAdapter(MessageManager.getMessagesForConversation(chatId), currentUserId)
         }
 
         sendButton = findViewById(R.id.sendButton)
         messageInput = findViewById(R.id.messageInput)
 
         sendButton.setOnClickListener {
-            val messageText = messageInput.text.toString()
+            val messageText = messageInput.text.toString().trim()
 
             if (messageText.isNotEmpty()) {
-                val newMessage = Message(counter++, messageText, 1, currentUserId, ZonedDateTime.now(), true)
-                dummyMessages.add(newMessage)
-                chatMessages.add(newMessage)
-                (recyclerView.adapter as? ChatAdapter)?.notifyItemInserted(chatMessages.size - 1)
-                recyclerView.scrollToPosition(chatMessages.size - 1)  // Scroll to the new message
-                messageInput.text?.clear()
+                val newMessage = Message(counter++, messageText, chatId, currentUserId, ZonedDateTime.now(), true)
+                MessageManager.addMessage(newMessage)
+                (recyclerView.adapter as? ChatAdapter)?.let { adapter ->
+                    adapter.dataset.add(newMessage)  // Assuming your com.example.hbv601g_t8.ChatAdapter has a public dataset property to modify
+                    adapter.notifyItemInserted(adapter.dataset.size - 1)
+                }
+                recyclerView.scrollToPosition((recyclerView.adapter?.itemCount ?: 1) - 1)  // Scroll to the new message
+                messageInput.text?.clear()  // Clear the input field
                 // TODO: Implement the logic to send the message to the backend and update the UI accordingly
             }
-
         }
     }
-
-
 }
