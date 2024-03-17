@@ -1,12 +1,12 @@
+package com.example.hbv601g_t8
+
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.example.hbv601g_t8.Message
-import com.example.hbv601g_t8.R
 import com.example.hbv601g_t8.databinding.ChatItemBinding
 
-class ChatAdapter(private val dataset: List<Message>, private val currentUserId: Long) :
+class ChatAdapter(val dataset: MutableList<Message>, private val currentUserId: Long) :
     RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
 
     class ChatViewHolder(private val binding: ChatItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -24,11 +24,11 @@ class ChatAdapter(private val dataset: List<Message>, private val currentUserId:
                 layoutParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
                 layoutParams.endToEnd = ConstraintLayout.LayoutParams.UNSET
                 binding.messageText.setBackgroundResource(R.drawable.incoming_message_background)
-                binding.messageText.setTextColor(R.color.white)
+                // Ensure to use a color resource correctly
+                binding.messageText.setTextColor(binding.root.context.getColor(R.color.white))
             }
 
             binding.messageText.layoutParams = layoutParams
-            // Optionally, you can also change the background or text color here based on the sender
         }
     }
 
@@ -39,10 +39,13 @@ class ChatAdapter(private val dataset: List<Message>, private val currentUserId:
 
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         val message = dataset[position]
-        //val isCurrentUser = message.senderId == currentUserId
         holder.bind(message, currentUserId)
     }
 
     override fun getItemCount() = dataset.size
 
+    fun addMessage(message: Message) {
+        dataset.add(message)
+        notifyItemInserted(dataset.size - 1)
+    }
 }
