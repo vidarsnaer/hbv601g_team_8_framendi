@@ -11,6 +11,7 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.example.hbv601g_t8.ChatActivity
 
 
 object Notification {
@@ -25,14 +26,13 @@ object Notification {
                 Manifest.permission.ACCESS_NOTIFICATION_POLICY
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // Handle permission not granted
-            // You can request permission here if needed
+
             return
         }
 
 
 
-        // Create the notification channel if running on Android Oreo (API 26) or higher
+
         createNotificationChannel(context)
 
         val intent = Intent(context, ChatActivity::class.java).apply {
@@ -54,8 +54,6 @@ object Notification {
     }
 
     private fun createNotificationChannel(context: Context) {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is not in the Support Library.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = context.getString(R.string.channel_name)
             val descriptionText = context.getString(R.string.channel_description)
@@ -63,7 +61,6 @@ object Notification {
             val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                 description = descriptionText
             }
-            // Register the channel with the system.
             val notificationManager: NotificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)

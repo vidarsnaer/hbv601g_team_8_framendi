@@ -50,7 +50,13 @@ class DiscActivity : AppCompatActivity() {
             val intent = Intent(this@DiscActivity, ChatOverviewActivity::class.java)
                 //.apply {putExtra("USER_ID", currentUserId) }
             startActivity(intent)
-            //showNotification()
+
+            Notification.showNotification(
+                this,
+                "Message Notification",
+                "content"
+            )
+
         }
 
         binding.addNewDiscButton.setOnClickListener {
