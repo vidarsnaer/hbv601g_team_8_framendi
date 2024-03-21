@@ -36,6 +36,18 @@
             app:defaultNavHost="true"
             app:navGraph="@navigation/nav_graph"/>
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addNewDiscButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:contentDescription="Add a new disc"
+            android:tint="@android:color/white"
+            app:srcCompat="@android:drawable/ic_input_add"
+            tools:layout_editor_absoluteX="15dp"
+            tools:layout_editor_absoluteY="595dp" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -51,17 +63,6 @@
         app:srcCompat="@android:drawable/sym_action_chat"
         android:contentDescription="@string/go_to_messages" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addNewDiscButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="333dp"
-        android:layout_marginBottom="20dp"
-        app:srcCompat="@android:drawable/ic_input_add"
-        android:tint="@android:color/white"
-        android:contentDescription="Add a new disc" />
 
 </RelativeLayout>
 

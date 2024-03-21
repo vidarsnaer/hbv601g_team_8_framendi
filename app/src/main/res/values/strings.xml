@@ -79,4 +79,6 @@
     <string name="delete">Delete</string>
     <string name="message_owner">Message Owner</string>
     <string name="add_to_favorites">Add to favorites</string>
+    <string name="channel_name">My Notification Channel</string>
+    <string name="channel_description">Channel for displaying important notifications</string>
 </resources>

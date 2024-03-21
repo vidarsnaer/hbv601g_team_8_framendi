@@ -1,7 +1,11 @@
 package com.example.hbv601g_t8
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.icu.text.SimpleDateFormat
+import android.os.Build
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
@@ -11,8 +15,12 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hbv601g_t8.databinding.ActivityMainBinding
+import java.util.Date
+import java.util.Locale
 
 class DiscActivity : AppCompatActivity() {
 
@@ -42,6 +50,7 @@ class DiscActivity : AppCompatActivity() {
             val intent = Intent(this@DiscActivity, ChatOverviewActivity::class.java)
                 //.apply {putExtra("USER_ID", currentUserId) }
             startActivity(intent)
+            //showNotification()
         }
 
         binding.addNewDiscButton.setOnClickListener {
@@ -90,4 +99,6 @@ class DiscActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration)
                 || super.onSupportNavigateUp()
     }
+
+
 }
