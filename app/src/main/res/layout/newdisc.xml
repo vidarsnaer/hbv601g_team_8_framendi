@@ -7,8 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    tools:context=".NewDiscActivity"
-    android:background="@drawable/background">
+    tools:context=".NewDiscActivity">
 
 
     <ImageView
@@ -22,7 +21,7 @@
         android:layout_width="273dp"
         android:layout_height="41dp"
         android:layout_marginTop="15dp"
-        android:text="Take Photo"
+        android:text="@string/take_photo"
         android:textSize="18sp" />
 
     <Button
@@ -30,7 +29,7 @@
         android:layout_width="273dp"
         android:layout_height="41dp"
         android:layout_marginTop="15dp"
-        android:text="Choose Photo"
+        android:text="@string/choose_photo"
         android:textSize="18sp"/>
 
     <EditText
@@ -46,23 +45,25 @@
         android:layout_width="273dp"
         android:layout_height="41dp"
         android:layout_marginTop="15dp"
-        android:text="Disc state"
-        android:textSize="12sp"/>
+        android:text="@string/disc_state"
+        android:textSize="12sp"
+        android:entries="@array/disc_states"/>
 
     <Spinner
         android:id="@+id/typeSpinner"
         android:layout_width="273dp"
         android:layout_height="41dp"
         android:layout_marginTop="15dp"
-        android:hint="Disc Type"
-        android:textSize="12sp"/>
+        android:hint="@string/disc_type"
+        android:textSize="12sp"
+        android:entries="@array/disc_types"/>
 
     <EditText
         android:id="@+id/newDiscColor"
         android:layout_width="273dp"
         android:layout_height="41dp"
         android:layout_marginTop="15dp"
-        android:hint="Color"
+        android:hint="@string/color"
         android:textSize="12sp"/>
 
     <EditText
@@ -70,7 +71,7 @@
         android:layout_width="273dp"
         android:layout_height="41dp"
         android:layout_marginTop="15dp"
-        android:hint="Price"
+        android:hint="@string/price"
         android:inputType="number"
         android:textSize="12sp"/>
 
@@ -79,7 +80,7 @@
         android:layout_width="273dp"
         android:layout_height="41dp"
         android:layout_marginTop="15dp"
-        android:hint="Description"
+        android:hint="@string/description"
         android:textSize="12sp"/>
 
     <EditText
@@ -87,7 +88,7 @@
         android:layout_width="273dp"
         android:layout_height="41dp"
         android:layout_marginTop="15dp"
-        android:hint="Quantity"
+        android:hint="@string/quantity"
         android:inputType="number"
         android:textSize="12sp"/>
 
@@ -96,7 +97,7 @@
         android:layout_width="273dp"
         android:layout_height="41dp"
         android:layout_marginTop="15dp"
-        android:text="Submit"
+        android:text="@string/submit_new_disc"
         android:textSize="18sp"/>
 
 </LinearLayout>
