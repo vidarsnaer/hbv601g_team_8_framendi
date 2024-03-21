@@ -75,6 +75,11 @@ class DiscActivity : AppCompatActivity() {
                 startActivity(intent)
                 true
             }
+            R.id.nav_favorites -> {
+                // Perform action when your menu item is clicked
+                startActivity(Intent(this, FavoriteActivity::class.java))
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
 

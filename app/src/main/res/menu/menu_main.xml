@@ -4,16 +4,12 @@
     tools:context="com.example.hbv601g_t8.DiscActivity">
 
     <item
-        android:id="@+id/nav_home"
-        android:title="@string/home"/>
+        android:id="@+id/nav_favorites"
+        android:title="@string/favorites"/>
 
     <item
         android:id="@+id/nav_settings"
         android:title="@string/settings"/>
-
-    <item
-        android:id="@+id/nav_favorites"
-        android:title="@string/favorites"/>
 
     <item
         android:id="@+id/nav_logout"

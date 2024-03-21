@@ -44,6 +44,9 @@
         <activity
             android:name=".SettingsActivity"
             android:exported="false" />
+        <activity
+            android:name=".FavoriteActivity"
+            android:exported="false" />
       <activity
             android:name=".ViewDiscActivity"
             android:exported="false" />
