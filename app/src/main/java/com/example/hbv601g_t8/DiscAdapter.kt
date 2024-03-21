@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 
-class DiscAdapter(private val discList: ArrayList<Disc>):
+class DiscAdapter(private val discList: List<Disc>):
     RecyclerView.Adapter<DiscAdapter.DiscViewHolder>() {
 
         private lateinit var context: Context
@@ -28,7 +28,7 @@ class DiscAdapter(private val discList: ArrayList<Disc>):
     override fun onBindViewHolder(holder: DiscViewHolder, position: Int) {
         val currentItem = discList[position]
         holder.title.text = currentItem.name
-        holder.price.text = currentItem.price.toString()
+        holder.price.text = context.getString(R.string.kr, currentItem.price.toString())
 
         holder.itemView.setOnClickListener {
             val id: Int = discList[position].discid

@@ -185,5 +185,16 @@
         android:layout_margin="10dp"
         android:id="@+id/message_owner"/>
 
+    <Button
+        android:id="@+id/edit_disc_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:backgroundTint="@color/Lavender"
+        android:text="@string/edit_disc"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/description"
+        android:visibility="gone"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
