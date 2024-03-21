@@ -62,8 +62,8 @@ class DiscActivity : AppCompatActivity(), FilterListener {
         val filterSpinnerType: Spinner = popupView.findViewById(R.id.FilterSpinnerType)
 
         // Populate Spinners with options
-        val states = arrayOf("Any", "New", "Used")
-        val types = arrayOf("Any", "Putter", "Mid-Range", "Driver", "Distance Driver")
+        val states = resources.getStringArray(R.array.filter_states)
+        val types = resources.getStringArray(R.array.filter_disc_types)
         filterSpinnerState.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, states)
         filterSpinnerType.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, types)
 

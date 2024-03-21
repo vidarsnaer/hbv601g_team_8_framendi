@@ -111,6 +111,9 @@ class ViewDiscActivity: AppCompatActivity() {
         editDiscInfo = findViewById(R.id.edit_disc_info)
         editDiscInfo.setOnClickListener {
             Toast.makeText(this, "Edit Disc Info", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, EditDiscActivity::class.java)
+            intent.putExtra("discId", discid)
+            startActivity(intent)
         }
 
         if (discInfo.user_id == 1) {
