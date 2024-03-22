@@ -55,6 +55,7 @@ dependencies {
     implementation(platform("io.github.jan-tennert.supabase:bom:2.2.1"))
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
     implementation("io.ktor:ktor-client-android:2.3.9")
+    implementation("com.google.firebase:firebase-inappmessaging:20.4.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -63,6 +64,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime:1.6.3")
     implementation("androidx.compose.runtime:runtime-livedata:1.6.3")
     implementation("androidx.compose.runtime:runtime-rxjava2:1.6.3")
+    implementation("no.tornado:tornadofx:1.7.20")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
 

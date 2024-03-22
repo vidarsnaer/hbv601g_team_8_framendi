@@ -79,4 +79,20 @@
     <string name="delete">Delete</string>
     <string name="message_owner">Message Owner</string>
     <string name="add_to_favorites">Add to favorites</string>
+    <string name="kr">%1$s Kr.</string>
+    <string name="my_discs">My Discs</string>
+    <string name="edit_disc">Edit Disc</string>
+    <string name="add_a_new_disc">Add a new disc</string>
+    <string-array name="filter_states">
+        <item>Any</item>
+        <item>New</item>
+        <item>Used</item>
+    </string-array>
+    <string-array name="filter_disc_types">
+        <item>Any</item>
+        <item>Putter</item>
+        <item>Mid-Range</item>
+        <item>Driver</item>
+        <item>Distance Driver</item>
+    </string-array>
 </resources>

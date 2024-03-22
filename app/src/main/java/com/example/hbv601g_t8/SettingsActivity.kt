@@ -17,6 +17,13 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import io.github.jan.supabase.gotrue.auth
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.jsonArray
+import javax.json.Json
+import javax.json.JsonObject
 
 class SettingsActivity :AppCompatActivity(){
 
@@ -25,6 +32,7 @@ class SettingsActivity :AppCompatActivity(){
     private lateinit var changePassword : Button
     private lateinit var deleteAccount : Button
     private lateinit var loggedInUser : User
+    private lateinit var userInfo: String
 
     override fun onCreate(savedInstanceState: Bundle?)  {
         super.onCreate(savedInstanceState)
@@ -34,11 +42,17 @@ class SettingsActivity :AppCompatActivity(){
         val prefs = getSharedPreferences(GlobalVariables.USER_ID, Context.MODE_PRIVATE)
         val userId = prefs.getInt(GlobalVariables.USER_ID, 0)
 
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                userInfo = SupabaseManager.supabase.auth.currentUserOrNull()?.userMetadata?.get("name").toString().removeSurrounding("\"")
+            }
+        }
+
         // TODO: Get user from db with this id, will use dummy data now
         loggedInUser = User(userId, "user", "user@user.is", "123")
 
         val username = findViewById<TextView>(R.id.username)
-        username.text = loggedInUser.name
+        username.text = userInfo
 
         val email = findViewById<TextView>(R.id.email)
         email.text = loggedInUser.email
