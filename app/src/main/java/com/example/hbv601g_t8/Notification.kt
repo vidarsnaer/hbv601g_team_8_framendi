@@ -31,6 +31,8 @@ object Notification {
         }
 
 
+
+
         createNotificationChannel(context)
 
         val intent = Intent(context, ChatActivity::class.java).apply {
@@ -65,7 +67,43 @@ object Notification {
         }
     }
 
-    
+
+
+/*
+    private const val CHANNEL_ID = "MessageChannel"
+    private const val NOTIFICATION_ID = 1
+
+    fun createNotificationChannel(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Message Notifications"
+            val descriptionText = "Receive notifications for new messages"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+            val notificationManager: NotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    fun showNotification(context: Context, message: String) {
+        val intent = Intent(context, ChatOverviewActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle("New Message")
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+
+        val notificationManager = NotificationManagerCompat.from(context)
+        notificationManager.notify(NOTIFICATION_ID, builder.build())
+    }
+
+ */
 }
 
 
