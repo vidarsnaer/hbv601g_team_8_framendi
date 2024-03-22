@@ -10,3 +10,11 @@ data class Conversation(
     val sellerid: Int,
     val conversation_title: String
 )
+
+@Serializable
+data class newConversationCreation(
+    val buyerid: Int,
+    val conversation_ended: Boolean,
+    val sellerid: Int,
+    val conversation_title: String
+)

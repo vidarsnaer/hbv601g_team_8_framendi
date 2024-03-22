@@ -31,9 +31,11 @@ class DiscAdapter(private val discList: List<Disc>):
         holder.price.text = context.getString(R.string.kr, currentItem.price.toString())
 
         holder.itemView.setOnClickListener {
-            val id: Int = discList[position].discid
+            val discid: Int = discList[position].discid
+            val discOwnerId: Int = discList[position].user_id
             val intent = Intent(context, ViewDiscActivity::class.java)
-            intent.putExtra("discid", id)
+            intent.putExtra("discid", discid)
+            intent.putExtra("discOwnerId", discOwnerId)
             context.startActivity(intent)
         }
 

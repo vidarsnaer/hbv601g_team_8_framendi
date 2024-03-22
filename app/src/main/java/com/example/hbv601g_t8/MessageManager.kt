@@ -3,7 +3,7 @@ package com.example.hbv601g_t8
 import java.time.ZonedDateTime
 
 object MessageManager {
-
+    /*
     private val dummyMessages = mutableListOf<Message>(
         Message(1, "halló", 1, 2, ZonedDateTime.now(), true),
         Message(2, "hæ", 1, 1, ZonedDateTime.now(), true),
@@ -14,7 +14,7 @@ object MessageManager {
         // Add your initial messages here
     )
 
-    fun getMessagesForConversation(conversationId: Long): MutableList<Message> {
+    fun getMessagesForConversation(conversationId: Int): MutableList<Message> {
         return if (conversationId == (-1).toLong()) {
             mutableListOf<Message>()
         } else {
@@ -26,6 +26,7 @@ object MessageManager {
     fun addMessage(message: Message) {
         dummyMessages.add(message)
     }
+    */
 
     // You can add other methods as needed, for example, to delete a message, update a message, etc.
 }

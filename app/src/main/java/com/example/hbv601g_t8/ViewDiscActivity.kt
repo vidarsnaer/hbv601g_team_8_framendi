@@ -21,7 +21,8 @@ import kotlinx.coroutines.withContext
 
 class ViewDiscActivity: AppCompatActivity() {
 
-    private  var discid : Int = 0
+    private var discid : Int = 0
+    private var discOwnerId: Int = 0
     private lateinit var title : TextView
     private lateinit var price : TextView
     private lateinit var condition : TextView
@@ -51,6 +52,7 @@ class ViewDiscActivity: AppCompatActivity() {
         val bundle = intent.extras
         if (bundle != null) {
             discid = bundle.getInt("discid")
+            discOwnerId = bundle.getInt("discOwnerId")
         }
 
         suspend fun selectDiscInfoFromDatabase() {
@@ -62,11 +64,6 @@ class ViewDiscActivity: AppCompatActivity() {
                 }.decodeSingle()
             }
         }
-        newArrayList = arrayListOf(
-            Disc(1, "used", "red disc slightly used", "Red Driver", 1000, "driver", 3, "red"),
-            Disc(2, "used", "pink disc which is new", "Pink Driver", 1000, "driver", 4, "pink"),
-            Disc(3, "used", "driver disc, not used", "Driver", 1000, "driver", 2, "black")
-        )
 
         runBlocking {
             selectDiscInfoFromDatabase()
@@ -100,19 +97,25 @@ class ViewDiscActivity: AppCompatActivity() {
 
         messageOwner = findViewById(R.id.message_owner)
         messageOwner.setOnClickListener {
-            if (disc != null) {
-                ownerId = disc.user_id.toLong()
-                //TODO: sækja nafn eiganda og nota sem conversationTitle
-                conversationTitle = disc.name
+
+            val newConversation = newConversationCreation (
+                9,
+                false,
+                discOwnerId,
+                "New Conversation Test"
+            )
+            val result : Conversation
+
+            runBlocking {
+                withContext(Dispatchers.IO) {
+                    result = SupabaseManager.supabase.from("conversation").insert(newConversation) {
+                        select()
+                    }.decodeSingle()
+                }
             }
 
-            val newConversationId = (ConversationManager.getConversations().maxByOrNull { it.conversationId }?.conversationId ?: 0) + 1
-
-            val newConversation = Conversation(newConversationId, currentUserId, ownerId, false, conversationTitle)
-            ConversationManager.addConversation(newConversation)
-
             val intent = Intent(this, ChatActivity::class.java).apply {
-                putExtra("CHAT_ID", newConversationId)
+                putExtra("CHAT_ID", result.conversationid)
             }
             startActivity(intent)
             //Toast.makeText(this, "Message owner", Toast.LENGTH_SHORT).show()

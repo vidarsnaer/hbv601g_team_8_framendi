@@ -3,7 +3,6 @@ package com.example.hbv601g_t8
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.collection.emptyIntSet
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
@@ -43,7 +42,7 @@ class ChatActivity : AppCompatActivity() {
         recyclerView = findViewById<RecyclerView>(R.id.chatRecyclerView).apply {
             layoutManager = LinearLayoutManager(this@ChatActivity)
             //adapter = com.example.hbv601g_t8.ChatAdapter(chatMessages, currentUserId)
-            adapter = ChatAdapter(MessageManager.getMessagesForConversation(chatId), currentUserId)
+            adapter = ChatAdapter(chatMessages, currentUserId)
         }
 
         recyclerView.scrollToPosition(chatMessages.size - 1)

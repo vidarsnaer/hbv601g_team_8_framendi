@@ -44,8 +44,4 @@ class ChatAdapter(private val dataset: List<Message>, private val currentUserId:
 
     override fun getItemCount() = dataset.size
 
-    fun addMessage(message: Message) {
-        dataset.add(message)
-        notifyItemInserted(dataset.size - 1)
-    }
 }

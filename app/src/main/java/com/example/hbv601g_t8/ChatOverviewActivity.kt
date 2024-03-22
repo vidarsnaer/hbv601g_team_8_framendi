@@ -39,10 +39,9 @@ class ChatOverviewActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         // Refresh the conversations list every time the activity resumes
-        val dummyConvos = ConversationManager.getConversations()
-        recyclerView.adapter = ChatOverviewAdapter(dummyConvos) { chatId ->
+        recyclerView.adapter = ChatOverviewAdapter(conversations) { conversationid ->
             val intent = Intent(this@ChatOverviewActivity, ChatActivity::class.java).apply {
-                putExtra("CHAT_ID", chatId)
+                putExtra("CHAT_ID", conversationid)
             }
             startActivity(intent)
         }
