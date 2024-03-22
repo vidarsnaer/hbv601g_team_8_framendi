@@ -144,17 +144,6 @@ class NewDiscActivity : AppCompatActivity() {
             }
         }
 
-        @Serializable
-        data class NewDiscCreation (
-            val price: Int,
-            val condition: String,
-            val description: String,
-            val name: String,
-            val type: String,
-            val colour: String,
-            val user_id: Int
-        )
-
         suspend fun insertProductIntoSupabase(newDiscCreation: NewDiscCreation) {
             withContext(Dispatchers.IO) {
                 SupabaseManager.supabase.from("discs").insert(newDiscCreation)

@@ -4,6 +4,10 @@
     tools:context="com.example.hbv601g_t8.DiscActivity">
 
     <item
+        android:id="@+id/nav_my_discs"
+        android:title="@string/my_discs"/>
+
+    <item
         android:id="@+id/nav_favorites"
         android:title="@string/favorites"/>
 

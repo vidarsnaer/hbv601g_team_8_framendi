@@ -1,12 +1,12 @@
 package com.example.hbv601g_t8
 
-import java.time.ZonedDateTime
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Message(
-    val messageId: Long,
+    val conversationid: Int,
     val message: String,
-    val conversationId: Long,
-    val senderId: Long,
-    val sentAt: ZonedDateTime,
-    val read: Boolean
+    val read: Boolean,
+    val senderid: Int,
+    val sent_at: String
 )
