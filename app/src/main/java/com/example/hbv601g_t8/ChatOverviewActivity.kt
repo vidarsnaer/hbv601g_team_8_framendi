@@ -5,29 +5,41 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.github.jan.supabase.postgrest.from
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.time.ZonedDateTime
 
 class ChatOverviewActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
 
-    private var conversation1 = Conversation(1, 2, 1, false, "Liverpool")
-    private var conversation2 = Conversation(2, 1, 2, false, "Chat 2")
-    private var conversation3 = Conversation(3, 1, 3, false, "ch3")
+    private lateinit var conversations : List<Conversation>
 
-    private var dummyConvos = arrayListOf(conversation1, conversation2, conversation3)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_overview)
 
+        runBlocking {
+            getConversationsFromDatabase()
+        }
+
         recyclerView = findViewById<RecyclerView>(R.id.chatOverviewRecyclerView).apply {
             layoutManager = LinearLayoutManager(this@ChatOverviewActivity)
-            adapter = ChatOverviewAdapter(dummyConvos) { chatId ->
+            adapter = ChatOverviewAdapter(conversations) {conversationid ->
                 val intent = Intent(this@ChatOverviewActivity, ChatActivity::class.java).apply {
-                    putExtra("CHAT_ID", chatId)
+                    putExtra("CHAT_ID", conversationid)
                 }
                 startActivity(intent)
             }
         }
     }
+
+    private suspend fun getConversationsFromDatabase() {
+        withContext(Dispatchers.IO) {
+            conversations = SupabaseManager.supabase.from("conversation").select().decodeList()
+        }
+    }
+
 }

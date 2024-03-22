@@ -6,15 +6,15 @@ import com.example.hbv601g_t8.Message
 import com.example.hbv601g_t8.R
 import com.example.hbv601g_t8.databinding.ChatItemBinding
 
-class ChatAdapter(private val dataset: List<Message>, private val currentUserId: Long) :
+class ChatAdapter(private val dataset: List<Message>, private val currentUserId: Int) :
     RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
 
     class ChatViewHolder(private val binding: ChatItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(message: Message, currentUserId: Long) {
+        fun bind(message: Message, currentUserId: Int) {
             binding.messageText.text = message.message
             val layoutParams = binding.messageText.layoutParams as ConstraintLayout.LayoutParams
 
-            if (message.senderId == currentUserId) {
+            if (message.senderid == currentUserId) {
                 // Align to the right for the current user's messages
                 layoutParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
                 layoutParams.startToStart = ConstraintLayout.LayoutParams.UNSET
@@ -24,7 +24,6 @@ class ChatAdapter(private val dataset: List<Message>, private val currentUserId:
                 layoutParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID
                 layoutParams.endToEnd = ConstraintLayout.LayoutParams.UNSET
                 binding.messageText.setBackgroundResource(R.drawable.incoming_message_background)
-                binding.messageText.setTextColor(R.color.white)
             }
 
             binding.messageText.layoutParams = layoutParams

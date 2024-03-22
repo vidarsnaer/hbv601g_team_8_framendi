@@ -13,3 +13,14 @@ data class Disc(
     val user_id: Int,
     val colour: String
 )
+
+@Serializable
+data class NewDiscCreation (
+    val price: Int,
+    val condition: String,
+    val description: String,
+    val name: String,
+    val type: String,
+    val colour: String,
+    val user_id: Int
+)
