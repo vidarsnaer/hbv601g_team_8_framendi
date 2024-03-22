@@ -17,6 +17,16 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import io.github.jan.supabase.gotrue.Auth
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.gotrue.user.UserInfo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.put
+import javax.json.Json
+import javax.json.JsonObject
 
 class SettingsActivity :AppCompatActivity(){
 
@@ -25,6 +35,7 @@ class SettingsActivity :AppCompatActivity(){
     private lateinit var changePassword : Button
     private lateinit var deleteAccount : Button
     private lateinit var loggedInUser : User
+    private lateinit var user : Auth
 
     override fun onCreate(savedInstanceState: Bundle?)  {
         super.onCreate(savedInstanceState)
@@ -34,14 +45,19 @@ class SettingsActivity :AppCompatActivity(){
         val prefs = getSharedPreferences(GlobalVariables.USER_ID, Context.MODE_PRIVATE)
         val userId = prefs.getInt(GlobalVariables.USER_ID, 0)
 
-        // TODO: Get user from db with this id, will use dummy data now
-        loggedInUser = User(userId, "user", "user@user.is", "123")
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                user = SupabaseManager.supabase.auth
+            }
+        }
+
+        println(user.currentUserOrNull()?.id)
 
         val username = findViewById<TextView>(R.id.username)
-        username.text = loggedInUser.name
+        username.text = user.currentUserOrNull()?.userMetadata?.get("name").toString().removeSurrounding("\"")
 
         val email = findViewById<TextView>(R.id.email)
-        email.text = loggedInUser.email
+        email.text = user.currentUserOrNull()?.email
 
         changeUsername = findViewById(R.id.change_username)
         changeUsername.paintFlags = changeUsername.paintFlags or Paint.UNDERLINE_TEXT_FLAG
@@ -96,8 +112,13 @@ class SettingsActivity :AppCompatActivity(){
                 Toast.makeText(this, "Please give a username", Toast.LENGTH_SHORT).show()
             }
             else{
-                // TODO: update username in db
-                loggedInUser.name = newName
+                runBlocking {
+                    user.modifyUser {
+                        data {
+                            put("name", newName)
+                        }
+                    }
+                }
 
                 val username = findViewById<TextView>(R.id.username)
                 username.text = newName
@@ -118,21 +139,27 @@ class SettingsActivity :AppCompatActivity(){
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setContentView(R.layout.editemail_dialog)
 
+        val email_Pattern = "^[A-Za-z](.*)(@)(.+)(\\.)(.+)".toRegex()
+
         val saveEmail: Button = dialog.findViewById(R.id.save_email)
         saveEmail.setOnClickListener( View.OnClickListener {
             val currentEmail = dialog.findViewById<EditText>(R.id.current_email)
             val newEmail = dialog.findViewById<EditText>(R.id.new_email)
             val currentEmailS = currentEmail.text.toString()
             val newEmailS = newEmail.text.toString()
-            if (currentEmailS == ""){
+            if (currentEmailS != user.currentUserOrNull()?.email){
                 Toast.makeText(this, "Please give your current email", Toast.LENGTH_SHORT).show()
             }
-            else if( newEmailS == ""){
-                Toast.makeText(this, "Please give your new email", Toast.LENGTH_SHORT).show()
+            else if(!email_Pattern.matches(newEmailS)){
+                Toast.makeText(this, "Please enter a valid email", Toast.LENGTH_SHORT).show()
             }
             else{
-                // TODO: update email in db
-                loggedInUser.name = newEmailS
+
+                runBlocking {
+                    user.modifyUser {
+                        email = newEmailS
+                    }
+                }
 
                 val email = findViewById<TextView>(R.id.email)
                 email.text = newEmailS
@@ -154,27 +181,26 @@ class SettingsActivity :AppCompatActivity(){
 
         val savePassword: Button = dialog.findViewById(R.id.save_password)
         savePassword.setOnClickListener( View.OnClickListener {
-            val currentPassword = dialog.findViewById<EditText>(R.id.current_password)
             val newPassword = dialog.findViewById<EditText>(R.id.new_password1)
             val confirmPassword = dialog.findViewById<EditText>(R.id.new_password2)
-            val currentPasswordS = currentPassword.text.toString()
             val newPasswordS = newPassword.text.toString()
             val confirmPasswordS = confirmPassword.text.toString()
 
-            if (currentPasswordS == ""){
-                Toast.makeText(this, "Please give your current password", Toast.LENGTH_SHORT).show()
+            if( newPasswordS == "" || confirmPasswordS == ""){
+                Toast.makeText(this, "Please enter your new password", Toast.LENGTH_SHORT).show()
             }
-            else if( newPasswordS == "" || confirmPasswordS == ""){
-                Toast.makeText(this, "Please give your new password", Toast.LENGTH_SHORT).show()
-            }
-            else if( currentPasswordS != loggedInUser.password){
-                Toast.makeText(this, "incorrect password", Toast.LENGTH_SHORT).show()
+            else if ( newPasswordS.length < 6) {
+                Toast.makeText(this, "Password should be at least 6 characters", Toast.LENGTH_SHORT).show()
             }
             else if( newPasswordS != confirmPasswordS){
-                Toast.makeText(this, "New password does not match", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
             }
             else{
-                // TODO: update password in db
+                runBlocking {
+                    user.modifyUser {
+                        password = newPasswordS
+                    }
+                }
 
                 dialog.dismiss()
                 Toast.makeText(this, "Password updated", Toast.LENGTH_SHORT).show()
@@ -214,4 +240,5 @@ class SettingsActivity :AppCompatActivity(){
         })
         startDialog(dialog)
     }
+
 }
