@@ -1,16 +1,12 @@
 package com.example.hbv601g_t8
 
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 
 class ViewDiscActivity: AppCompatActivity() {
 
@@ -46,9 +42,9 @@ class ViewDiscActivity: AppCompatActivity() {
         }
 
         newArrayList = arrayListOf(
-            Disc(1, "used", "red disc slightly used", "Red Driver", 1000, "driver", 3, "red"),
-            Disc(2, "used", "pink disc which is new", "Pink Driver", 1000, "driver", 4, "pink"),
-            Disc(3, "used", "driver disc, not used", "Driver", 1000, "driver", 2, "black")
+            Disc(1, "used", "red disc slightly used", "Red Driver", 1000, "driver", 1, "red", 66.497650, -19.202146),
+            Disc(2, "used", "pink disc which is new", "Pink Driver", 1000, "driver", 1, "pink", 64.825525, -17.429893),
+            Disc(3, "used", "driver disc, not used", "Driver", 1000, "driver", 1, "black", 66.326720, -21.481743)
         )
 
         val disc = newArrayList.find { it.discid == discid }

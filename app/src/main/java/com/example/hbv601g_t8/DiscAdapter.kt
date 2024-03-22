@@ -9,11 +9,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
+class DiscAdapter(private val discList: ArrayList<Disc>) : RecyclerView.Adapter<DiscAdapter.DiscViewHolder>() {
 
-class DiscAdapter(private val discList: ArrayList<Disc>):
-    RecyclerView.Adapter<DiscAdapter.DiscViewHolder>() {
-
-        private lateinit var context: Context
+    private lateinit var context: Context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DiscViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_view, parent, false)
@@ -32,16 +30,23 @@ class DiscAdapter(private val discList: ArrayList<Disc>):
 
         holder.itemView.setOnClickListener {
             val id: Int = discList[position].discid
-            val intent = Intent(context, ViewDiscActivity::class.java)
-            intent.putExtra("discid", id)
+            val intent = Intent(context, ViewDiscActivity::class.java).apply {
+                putExtra("discid", id)
+            }
             context.startActivity(intent)
         }
-
     }
 
-    class DiscViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        val image : ImageView = itemView.findViewById(R.id.iv_image)
-        val title : TextView = itemView.findViewById(R.id.tv_title)
-        val price : TextView = itemView.findViewById(R.id.tv_price)
+    class DiscViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val image: ImageView = itemView.findViewById(R.id.iv_image)
+        val title: TextView = itemView.findViewById(R.id.tv_title)
+        val price: TextView = itemView.findViewById(R.id.tv_price)
+    }
+
+
+    fun updateData(newDiscs: ArrayList<Disc>) {
+        discList.clear()  // Clear the existing data
+        discList.addAll(newDiscs)  // Add the new data
+        notifyDataSetChanged()  // Notify the adapter to refresh the RecyclerView
     }
 }

@@ -3,16 +3,15 @@ package com.example.hbv601g_t8
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hbv601g_t8.databinding.ActivityMainBinding
+
 
 class DiscActivity : AppCompatActivity() {
 
@@ -25,9 +24,7 @@ class DiscActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         setSupportActionBar(binding.toolbar)
-
 
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(navController.graph)
@@ -38,6 +35,7 @@ class DiscActivity : AppCompatActivity() {
         //    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
         //        .setAction("Action", null).show()
         //}
+
         binding.fab.setOnClickListener {
             val intent = Intent(this@DiscActivity, ChatOverviewActivity::class.java)
                 //.apply {putExtra("USER_ID", currentUserId) }
@@ -48,6 +46,7 @@ class DiscActivity : AppCompatActivity() {
             val intent = Intent(this@DiscActivity, NewDiscActivity::class.java)
             startActivity(intent)
         }
+
 
     }
 
@@ -90,4 +89,6 @@ class DiscActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration)
                 || super.onSupportNavigateUp()
     }
+
+
 }
