@@ -11,12 +11,18 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.ViewUtils
 import com.example.hbv601g_t8.databinding.ActivityMainBinding
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.gotrue.providers.builtin.Email
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.put
 
 class RegisterActivity :AppCompatActivity(){
 
-    private lateinit var username : EditText
-    private lateinit var email : EditText
-    private lateinit var password : EditText
+    private lateinit var newUsername : EditText
+    private lateinit var newEmail : EditText
+    private lateinit var newPassword : EditText
     private lateinit var registerButton : Button
     override fun onCreate(savedInstanceState: Bundle?)  {
         super.onCreate(savedInstanceState)
@@ -24,25 +30,39 @@ class RegisterActivity :AppCompatActivity(){
 
 
 
-        username = findViewById(R.id.username)
-        email = findViewById(R.id.email)
-        password = findViewById(R.id.password)
+        newUsername = findViewById(R.id.username)
+        newEmail = findViewById(R.id.email)
+        newPassword = findViewById(R.id.password)
         registerButton = findViewById(R.id.registerButton)
 
 
         registerButton.setOnClickListener {
-            val dummyId = 2
-            val enteredUsername = username.text.toString()
-            val enteredEmail = email.text.toString()
-            val enteredPassword = password.text.toString()
 
-            // Simulate storing the registration data in SharedPreferences
-            val newUser = User(dummyId, enteredUsername, enteredEmail, enteredPassword)
-            saveUser(newUser, applicationContext)
+            val newUserUsername = newUsername.text.toString()
+            val newUserEmail = newEmail.text.toString()
+            val newUserPassword = newPassword.text.toString()
 
-            Toast.makeText(this, "Registration Successful!", Toast.LENGTH_SHORT).show()
-            redirectToHome(newUser)
-            // Here you can navigate to another activity, or perform any other action upon successful registration
+            try {
+                runBlocking {
+                    withContext(Dispatchers.IO) {
+                        SupabaseManager.supabase.auth.signUpWith(Email) {
+                            email = newUserEmail
+                            password = newUserPassword
+                        }
+                        SupabaseManager.supabase.auth.modifyUser {
+                            data {
+                                put("name", newUserUsername)
+                            }
+                        }
+                    }
+                }
+                Toast.makeText(this, "Account Created Successfully!", Toast.LENGTH_SHORT).show()
+                redirectToLogin()
+            } catch (e: Exception) {
+                Toast.makeText(this,"Account Creation Failed!", Toast.LENGTH_SHORT).show()
+                // For example, display an error message or log the exception
+                println("Error occurred during sign-in: ${e.message}")
+            }
         }
     }
 
@@ -61,9 +81,8 @@ class RegisterActivity :AppCompatActivity(){
      * Opens the DiscActivity and finishes the RegisterActivity
      * @property newUser
      */
-    private fun redirectToHome(newUser: User) {
-        val intent = Intent(this@RegisterActivity, DiscActivity::class.java)
-        intent.putExtra("username", newUser.name)
+    private fun redirectToLogin() {
+        val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
         startActivity(intent)
         finish()
 

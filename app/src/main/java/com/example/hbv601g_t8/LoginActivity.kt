@@ -10,6 +10,12 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.ViewUtils
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.gotrue.providers.builtin.Email
+import io.github.jan.supabase.postgrest.from
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class LoginActivity :AppCompatActivity(){
 
@@ -30,12 +36,26 @@ class LoginActivity :AppCompatActivity(){
 
 
         loginButton.setOnClickListener(View.OnClickListener {
-            if(username.text.toString() == "user" && password.text.toString() == "1234"){
+
+            val userEmail = username.text.toString()
+            val userPassword = password.text.toString()
+
+            try {
+                runBlocking {
+                    withContext(Dispatchers.IO) {
+                        SupabaseManager.supabase.auth.signInWith(Email) {
+                            email = userEmail
+                            password = userPassword
+                        }
+                    }
+                }
                 Toast.makeText(this, "Login Successful!", Toast.LENGTH_SHORT).show()
                 setLoggedInState(true)
                 redirectToHome()
-            }else {
+            } catch (e: Exception) {
                 Toast.makeText(this,"Login Failed!", Toast.LENGTH_SHORT).show()
+                // For example, display an error message or log the exception
+                println("Error occurred during sign-in: ${e.message}")
             }
         })
     }
