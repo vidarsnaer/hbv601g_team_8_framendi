@@ -1,3 +1,5 @@
+package com.example.hbv601g_t8
+
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -27,7 +29,6 @@ class ChatAdapter(private val dataset: List<Message>, private val currentUserId:
             }
 
             binding.messageText.layoutParams = layoutParams
-            // Optionally, you can also change the background or text color here based on the sender
         }
     }
 
@@ -38,10 +39,13 @@ class ChatAdapter(private val dataset: List<Message>, private val currentUserId:
 
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         val message = dataset[position]
-        //val isCurrentUser = message.senderId == currentUserId
         holder.bind(message, currentUserId)
     }
 
     override fun getItemCount() = dataset.size
 
+    fun addMessage(message: Message) {
+        dataset.add(message)
+        notifyItemInserted(dataset.size - 1)
+    }
 }

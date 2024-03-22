@@ -1,6 +1,5 @@
 package com.example.hbv601g_t8
 
-import ChatAdapter
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -43,7 +42,8 @@ class ChatActivity : AppCompatActivity() {
 
         recyclerView = findViewById<RecyclerView>(R.id.chatRecyclerView).apply {
             layoutManager = LinearLayoutManager(this@ChatActivity)
-            adapter = ChatAdapter(chatMessages, currentUserId)
+            //adapter = com.example.hbv601g_t8.ChatAdapter(chatMessages, currentUserId)
+            adapter = ChatAdapter(MessageManager.getMessagesForConversation(chatId), currentUserId)
         }
 
         recyclerView.scrollToPosition(chatMessages.size - 1)

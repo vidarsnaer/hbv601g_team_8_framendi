@@ -65,5 +65,8 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.6.3")
     implementation("androidx.compose.runtime:runtime-rxjava2:1.6.3")
     implementation("no.tornado:tornadofx:1.7.20")
+    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
+
 
 }
