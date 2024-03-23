@@ -1,7 +1,11 @@
 package com.example.hbv601g_t8
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.icu.text.SimpleDateFormat
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import com.google.android.material.snackbar.Snackbar
@@ -12,6 +16,12 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.hbv601g_t8.databinding.ActivityMainBinding
+import java.util.Date
+import java.util.Locale
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -22,7 +32,6 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
-import com.example.hbv601g_t8.databinding.ActivityMainBinding
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
 import kotlinx.coroutines.Dispatchers
@@ -138,6 +147,13 @@ class DiscActivity : AppCompatActivity(), FilterListener {
             val intent = Intent(this@DiscActivity, ChatOverviewActivity::class.java)
                 //.apply {putExtra("USER_ID", currentUserId) }
             startActivity(intent)
+
+            Notification.showNotification(
+                this,
+                "Message Notification",
+                "content"
+            )
+
         }
 
         binding.addNewDiscButton.setOnClickListener {
