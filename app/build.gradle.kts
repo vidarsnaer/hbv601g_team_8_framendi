@@ -67,8 +67,8 @@ dependencies {
     implementation("no.tornado:tornadofx:1.7.20")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
+    implementation ("com.google.android.material:material:<latest_version>")
     implementation("androidx.core:core-ktx:1.12.0")
-
 
 
 

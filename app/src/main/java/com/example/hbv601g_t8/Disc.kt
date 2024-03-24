@@ -11,7 +11,9 @@ data class Disc(
     val price: Int,
     val type: String,
     val user_id: Int,
-    val colour: String
+    val colour: String,
+    val latitude: Double,
+    val longitude: Double
 )
 
 @Serializable

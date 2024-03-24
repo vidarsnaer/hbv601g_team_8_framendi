@@ -38,12 +38,18 @@ class DiscAdapter(private val discList: List<Disc>):
             intent.putExtra("discOwnerId", discOwnerId)
             context.startActivity(intent)
         }
-
     }
 
-    class DiscViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        val image : ImageView = itemView.findViewById(R.id.iv_image)
-        val title : TextView = itemView.findViewById(R.id.tv_title)
-        val price : TextView = itemView.findViewById(R.id.tv_price)
+    class DiscViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val image: ImageView = itemView.findViewById(R.id.iv_image)
+        val title: TextView = itemView.findViewById(R.id.tv_title)
+        val price: TextView = itemView.findViewById(R.id.tv_price)
+    }
+
+
+    fun updateData(newDiscs: ArrayList<Disc>) {
+        discList.clear()  // Clear the existing data
+        discList.addAll(newDiscs)  // Add the new data
+        notifyDataSetChanged()  // Notify the adapter to refresh the RecyclerView
     }
 }

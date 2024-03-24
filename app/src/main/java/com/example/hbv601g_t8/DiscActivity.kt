@@ -7,6 +7,8 @@ import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.os.Build
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.LayoutInflater
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +16,11 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.example.hbv601g_t8.databinding.ActivityMainBinding
+
+
+class DiscActivity : AppCompatActivity() {
+
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.app.NotificationCompat
@@ -143,6 +150,7 @@ class DiscActivity : AppCompatActivity(), FilterListener {
         //    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
         //        .setAction("Action", null).show()
         //}
+
         binding.fab.setOnClickListener {
             val intent = Intent(this@DiscActivity, ChatOverviewActivity::class.java)
                 //.apply {putExtra("USER_ID", currentUserId) }
