@@ -79,4 +79,42 @@
     <string name="delete">Delete</string>
     <string name="message_owner">Message Owner</string>
     <string name="add_to_favorites">Add to favorites</string>
+    <string name="channel_name">My Notification Channel</string>
+    <string name="channel_description">Channel for displaying important notifications</string>
+    <string name="kr">%1$s Kr.</string>
+    <string name="my_discs">My Discs</string>
+    <string name="edit_disc">Edit Disc</string>
+    <string name="add_a_new_disc">Add a new disc</string>
+    <string name="submit">Submit</string>
+    <string name="quantity">Quantity</string>
+    <string name="description">Description</string>
+    <string name="disc_type">Disc Type</string>
+    <string name="disc_state">Disc state</string>
+    <string name="choose_photo">Choose Photo</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="submit_new_disc">Submit New Disc</string>
+    <string name="update_info">Update</string>
+    <string name="password_should_be_at_least_6_characters">Password should be at least 6 characters</string>
+    <string-array name="filter_states">
+        <item>Any</item>
+        <item>New</item>
+        <item>Used</item>
+    </string-array>
+    <string-array name="filter_disc_types">
+        <item>Any</item>
+        <item>Putter</item>
+        <item>Mid-Range</item>
+        <item>Driver</item>
+        <item>Distance Driver</item>
+    </string-array>
+    <string-array name="disc_states">
+        <item>New</item>
+        <item>Used</item>
+    </string-array>
+    <string-array name="disc_types">
+        <item>Putter</item>
+        <item>Mid-Range</item>
+        <item>Driver</item>
+        <item>Distance Driver</item>
+    </string-array>
 </resources>

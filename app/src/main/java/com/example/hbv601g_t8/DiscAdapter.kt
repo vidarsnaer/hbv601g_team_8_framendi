@@ -9,9 +9,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class DiscAdapter(private val discList: ArrayList<Disc>) : RecyclerView.Adapter<DiscAdapter.DiscViewHolder>() {
 
-    private lateinit var context: Context
+class DiscAdapter(private val discList: List<Disc>):
+    RecyclerView.Adapter<DiscAdapter.DiscViewHolder>() {
+
+        private lateinit var context: Context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DiscViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_view, parent, false)
@@ -26,13 +28,14 @@ class DiscAdapter(private val discList: ArrayList<Disc>) : RecyclerView.Adapter<
     override fun onBindViewHolder(holder: DiscViewHolder, position: Int) {
         val currentItem = discList[position]
         holder.title.text = currentItem.name
-        holder.price.text = currentItem.price.toString()
+        holder.price.text = context.getString(R.string.kr, currentItem.price.toString())
 
         holder.itemView.setOnClickListener {
-            val id: Int = discList[position].discid
-            val intent = Intent(context, ViewDiscActivity::class.java).apply {
-                putExtra("discid", id)
-            }
+            val discid: Int = discList[position].discid
+            val discOwnerId: Int = discList[position].user_id
+            val intent = Intent(context, ViewDiscActivity::class.java)
+            intent.putExtra("discid", discid)
+            intent.putExtra("discOwnerId", discOwnerId)
             context.startActivity(intent)
         }
     }

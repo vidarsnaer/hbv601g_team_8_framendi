@@ -16,19 +16,32 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hbv601g_t8.databinding.DiscListFragmentBinding
 import kotlin.math.ceil
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Spinner
+import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.hbv601g_t8.databinding.DiscListFragmentBinding
+import io.github.jan.supabase.postgrest.from
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
+
+interface FilterListener {
+    fun onFiltersApplied(priceMin: String, priceMax: String, state: String, type: String)
+}
 
 class DiscListFragment : Fragment() {
 
     private var _binding: DiscListFragmentBinding? = null
-
-    // Master list that holds all discs, remains unchanged
-    private lateinit var masterDiscList: ArrayList<Disc>
-
-    // List used for display, can be modified based on filters
-    private lateinit var displayDiscList: ArrayList<Disc>
-
-    private lateinit var discAdapter: DiscAdapter
+    private lateinit var newDiscList: List<Disc>
+    private lateinit var filteredDiscList: List<Disc>
+    private lateinit var filterMinPrice: String
+    private lateinit var filterMaxPrice: String
+    private lateinit var filterType: String
+    private lateinit var filterState: String
+    private lateinit var clearFilterButton: Button
 
     private val binding get() = _binding!!
 
@@ -52,20 +65,21 @@ class DiscListFragment : Fragment() {
         TODO("Not yet implemented")
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    fun updateFilters(priceMin: String, priceMax: String, state: String, type: String) {
+        filterMinPrice = priceMin
+        filterMaxPrice = priceMax
+        filterState = state
+        filterType = type
+
+        println("$filterMinPrice - $filterMaxPrice, $filterState, $filterType")
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+
         _binding = DiscListFragmentBinding.inflate(inflater, container, false)
-
-        masterDiscList = arrayListOf(
-            Disc(1, "used", "red disc slightly used", "Red Driver", 1000, "driver", 1, "red", 66.497650, -19.202146),
-            Disc(2, "used", "pink disc which is new", "Pink Driver", 1000, "driver", 1, "pink", 64.825525, -17.429893),
-            Disc(3, "used", "driver disc, not used", "Driver", 1000, "driver", 1, "black", 66.326720, -21.481743)
-        )
-
-        displayDiscList = ArrayList(masterDiscList) // Initially, display all discs
-
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        discAdapter = DiscAdapter(displayDiscList)
-        binding.recyclerView.adapter = discAdapter
 
         return binding.root
     }
@@ -152,6 +166,17 @@ class DiscListFragment : Fragment() {
 
             updateSliderText(10000000f)  // Show "All" initially
         }
+        newDiscList = emptyList()
+
+        runBlocking {
+            selectAllDiscsFromDatabase()
+        }
+
+        val recyclerView = binding.recyclerView
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = DiscAdapter(newDiscList)
+
+        println("DiscListFragment created")
     }
 
 
@@ -193,4 +218,55 @@ class DiscListFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    private suspend fun selectAllDiscsFromDatabase() {
+        withContext(Dispatchers.IO) {
+            newDiscList = SupabaseManager.supabase.from("discs").select().decodeList<Disc>()
+        }
+    }
+
+    fun filterAndRefreshView() {
+        println("refreshView Called")
+        println("$filterMinPrice - $filterMaxPrice, $filterState, $filterType")
+        filteredDiscList = emptyList()
+
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                filteredDiscList = SupabaseManager.supabase.from("discs").select {
+                    filter {
+                        if (filterState != "Any")  {
+                            eq("condition", filterState)
+                        }
+                        if (filterType != "Any") {
+                            eq("type", filterType)
+                        }
+                        and {
+                            gte("price", filterMinPrice)
+                            lte("price", filterMaxPrice)
+                        }
+                    }
+                }.decodeList<Disc>()
+            }
+        }
+
+        if (filteredDiscList.isNotEmpty()) {
+            val recyclerView = binding.recyclerView
+            recyclerView.adapter = DiscAdapter(filteredDiscList)
+        } else {
+            Toast.makeText(requireContext(), "No discs matches your filter", Toast.LENGTH_SHORT).show()
+        }
+
+        println("refreshView committed")
+    }
+
+    fun clearFilters() {
+        runBlocking {
+            selectAllDiscsFromDatabase()
+        }
+
+        val recyclerView = binding.recyclerView
+        recyclerView.adapter = DiscAdapter(newDiscList)
+        println("filters have been cleared")
+    }
+
 }

@@ -7,7 +7,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
 
     <application
         android:allowBackup="true"
@@ -50,6 +51,10 @@
         <activity
             android:name=".FavoriteActivity"
             android:exported="false" />
+        <activity android:name=".MyDiscsActivity"
+            android:exported="false" />
+        <activity android:name=".EditDiscActivity"
+            android:exported="false"/>
       <activity
             android:name=".ViewDiscActivity"
             android:exported="false" />
@@ -64,7 +69,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/providerfile"/>
         </provider>
-        
 
     </application>
 
