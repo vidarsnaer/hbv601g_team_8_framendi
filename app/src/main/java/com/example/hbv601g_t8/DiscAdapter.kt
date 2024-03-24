@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 
-class DiscAdapter(private val discList: List<Disc>):
+class DiscAdapter(private var discList: List<Disc>):
     RecyclerView.Adapter<DiscAdapter.DiscViewHolder>() {
 
         private lateinit var context: Context
@@ -47,9 +47,10 @@ class DiscAdapter(private val discList: List<Disc>):
     }
 
 
-    fun updateData(newDiscs: ArrayList<Disc>) {
-        discList.clear()  // Clear the existing data
-        discList.addAll(newDiscs)  // Add the new data
+
+    fun updateData(newDiscs: List<Disc>) {
+        discList = newDiscs  // Add the new data
         notifyDataSetChanged()  // Notify the adapter to refresh the RecyclerView
     }
+
 }

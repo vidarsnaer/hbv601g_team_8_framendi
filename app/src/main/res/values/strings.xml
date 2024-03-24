@@ -95,6 +95,8 @@
     <string name="submit_new_disc">Submit New Disc</string>
     <string name="update_info">Update</string>
     <string name="password_should_be_at_least_6_characters">Password should be at least 6 characters</string>
+    <string name="filter">Filter</string>
+    <string name="clear_filter">Clear</string>
     <string-array name="filter_states">
         <item>Any</item>
         <item>New</item>

@@ -17,6 +17,7 @@ import io.ktor.util.Identity.decode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import kotlin.properties.Delegates
 
 class ViewDiscActivity: AppCompatActivity() {
 
@@ -35,6 +36,7 @@ class ViewDiscActivity: AppCompatActivity() {
     private lateinit var favorites : Button
     private lateinit var discInfo : Disc
     private lateinit var editDiscInfo: Button
+    private lateinit var favouriteMark: List<FavoriteActivity.FavoriteMark>
 
     private var inFavorites = -1
 
@@ -61,6 +63,11 @@ class ViewDiscActivity: AppCompatActivity() {
                         eq("discid", discid)
                     }
                 }.decodeSingle()
+                favouriteMark = SupabaseManager.supabase.from("favorite").select {
+                    filter {
+                        eq("user_id", 1)
+                    }
+                }.decodeList()
             }
         }
 
@@ -120,18 +127,40 @@ class ViewDiscActivity: AppCompatActivity() {
             //Toast.makeText(this, "Message owner", Toast.LENGTH_SHORT).show()
         }
 
+        var favorited = favouriteMark.any {mark -> mark.disc_discid == discid }
+
         favorites = findViewById(R.id.favorite)
+
+        if (favorited) {
+            favorites.setBackgroundResource(R.drawable.baseline_favorite_24)
+        }
+
         favorites.setOnClickListener{
-            if(inFavorites == -1){
+            if(!favorited){
+                val addToFavourite = FavoriteActivity.AddFavoriteMark(discid, 1)
                 favorites.setBackgroundResource(R.drawable.baseline_favorite_24)
                 Toast.makeText(this, "Added to favorites", Toast.LENGTH_SHORT).show()
-                //TODO: add to favorites
+                runBlocking {
+                    withContext(Dispatchers.IO) {
+                        SupabaseManager.supabase.from("favorite").insert(addToFavourite)
+                    }
+                }
+                favorited = true
             } else {
                 favorites.setBackgroundResource(R.drawable.baseline_favorite_border_24)
                 Toast.makeText(this, "Removed favorites", Toast.LENGTH_SHORT).show()
-                //TODO: remove from favorites
+                runBlocking {
+                    withContext(Dispatchers.IO) {
+                        SupabaseManager.supabase.from("favorite").delete {
+                            filter {
+                                eq("disc_discid", discid)
+                                eq("user_id", 1)
+                            }
+                        }
+                    }
+                }
+                favorited = false
             }
-            inFavorites *= -1
         }
 
         editDiscInfo = findViewById(R.id.edit_disc_info)

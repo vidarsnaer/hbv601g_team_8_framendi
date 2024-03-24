@@ -14,18 +14,23 @@
         android:fitsSystemWindows="true"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/search_Button"
-            android:layout_width="70dp"
+            android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:background="@color/white" />
+            android:text="@string/filter"
+            android:textColor="@color/purple_700"
+            android:backgroundTint="@color/white" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/clearFilter_Button"
-            android:layout_width="70dp"
+            android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginStart="30dp"
-            android:visibility="gone"/>
+            android:text="@string/clear_filter"
+            android:textColor="@color/purple_700"
+            android:visibility="gone"
+            android:backgroundTint="@color/white"/>
 
     </androidx.appcompat.widget.Toolbar>
 

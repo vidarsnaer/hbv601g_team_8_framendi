@@ -17,16 +17,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.hbv601g_t8.databinding.ActivityMainBinding
-
-
-class DiscActivity : AppCompatActivity() {
-
-import android.view.Menu
-import android.view.MenuItem
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.hbv601g_t8.databinding.ActivityMainBinding
 import java.util.Date
 import java.util.Locale
 import android.view.View
@@ -39,6 +32,7 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
 import kotlinx.coroutines.Dispatchers
@@ -49,10 +43,10 @@ class DiscActivity : AppCompatActivity(), FilterListener {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-    private lateinit var searchButton: Button
+    private lateinit var searchButton: MaterialButton
     private lateinit var popupWindow: PopupWindow
     private lateinit var applyFiltersButton: Button
-    private lateinit var clearFilterButton: Button
+    private lateinit var clearFilterButton: MaterialButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

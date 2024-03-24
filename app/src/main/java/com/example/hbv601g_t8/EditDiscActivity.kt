@@ -79,7 +79,9 @@ class EditDiscActivity : AppCompatActivity() {
                 updatedDiscPrice,
                 updatedDiscType,
                 currentDisc.user_id,
-                updatedDiscColor
+                updatedDiscColor,
+                1.0,
+                1.0
             )
 
             Toast.makeText(this, "Disc Info Updated", Toast.LENGTH_SHORT).show()

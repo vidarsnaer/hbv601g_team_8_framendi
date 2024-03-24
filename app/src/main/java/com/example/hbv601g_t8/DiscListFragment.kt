@@ -20,8 +20,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.hbv601g_t8.databinding.DiscListFragmentBinding
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -42,6 +40,7 @@ class DiscListFragment : Fragment() {
     private lateinit var filterType: String
     private lateinit var filterState: String
     private lateinit var clearFilterButton: Button
+    private lateinit var discAdapter: DiscAdapter
 
     private val binding get() = _binding!!
 
@@ -79,6 +78,8 @@ class DiscListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        newDiscList = emptyList()
+
         _binding = DiscListFragmentBinding.inflate(inflater, container, false)
 
         return binding.root
@@ -87,15 +88,22 @@ class DiscListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requestLocationPermissionIfNeeded()
-        discAdapter = DiscAdapter(displayDiscList)
+        // Update the slider to reflect hardcoded location settings
+
+        newDiscList = emptyList()
+
+        runBlocking {
+            selectAllDiscsFromDatabase()
+        }
+
+        updateSliderMaxDistance()
+
+        discAdapter = DiscAdapter(newDiscList)
 
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = discAdapter
         }
-
-        // Update the slider to reflect hardcoded location settings
-        updateSliderMaxDistance()
 
         binding.radiusSlider.addOnChangeListener { slider, value, fromUser ->
             if (fromUser) {
@@ -133,14 +141,16 @@ class DiscListFragment : Fragment() {
             else -> return  // No provider available, consider handling this case
         }
 
-        // This requires ACCESS_FINE_LOCATION or ACCESS_COARSE_LOCATION permission
-        val location = locationManager.getLastKnownLocation(provider)
-        if (location != null) {
-            userLocation = location
-            updateSliderMaxDistance()  // Now you can safely update the slider with the user location
-        } else {
+        when {
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
+                // Fetch the location once permission is confirmed
+                userLocation = locationManager.getLastKnownLocation(provider)
+                updateSliderMaxDistance()
+            } else -> {
             // Consider handling the case where location is null
+            }
         }
+
     }
 
     private fun showInContextUI() {
@@ -166,17 +176,7 @@ class DiscListFragment : Fragment() {
 
             updateSliderText(10000000f)  // Show "All" initially
         }
-        newDiscList = emptyList()
 
-        runBlocking {
-            selectAllDiscsFromDatabase()
-        }
-
-        val recyclerView = binding.recyclerView
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = DiscAdapter(newDiscList)
-
-        println("DiscListFragment created")
     }
 
 
@@ -189,24 +189,26 @@ class DiscListFragment : Fragment() {
     }
 
     private fun filterDiscsByRadius(radius: Double) {
+
         val filteredDiscs = if (radius >= 10000000.0) {
-            ArrayList(masterDiscList)  // Use a copy of the master list
+            newDiscList  // Use a copy of the master list
         } else {
-            masterDiscList.filter { disc ->
+            newDiscList.filter { disc ->
                 val results = FloatArray(1)
                 userLocation?.let { Location.distanceBetween(it.latitude, userLocation!!.longitude, disc.latitude, disc.longitude, results) }
                 results[0] / 1000 <= radius  // Filtering by radius in kilometers
             }
         }
         // Update the display list and adapter
-        displayDiscList.clear()
-        displayDiscList.addAll(filteredDiscs)
-        discAdapter.notifyDataSetChanged()
+        discAdapter.updateData(filteredDiscs)
         Log.d("DiscListFragment", "Displayed discs count: ${filteredDiscs.size}")
     }
 
     private fun calculateMaxDistance(): Float {
-        return masterDiscList.maxOfOrNull { disc ->
+
+        val mutableDiscList = newDiscList.toMutableList()
+
+        return mutableDiscList.maxOfOrNull { disc ->
             val results = FloatArray(1)
             userLocation?.let { Location.distanceBetween(it.latitude, userLocation!!.longitude, disc.latitude, disc.longitude, results) }
             results[0]  // Distance in meters
