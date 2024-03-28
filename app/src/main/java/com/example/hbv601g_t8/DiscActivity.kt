@@ -32,6 +32,7 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
+import com.example.hbv601g_t8.SupabaseManager.supabase
 import com.google.android.material.button.MaterialButton
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
@@ -50,6 +51,12 @@ class DiscActivity : AppCompatActivity(), FilterListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        /* Get the id from sharedPrefrences
+        val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
+        val id =  prefs.getString(GlobalVariables.USER_ID, "No id found")
+        Toast.makeText(this, id, Toast.LENGTH_SHORT).show()
+         */
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

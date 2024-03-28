@@ -10,9 +10,11 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.ViewUtils
+import com.example.hbv601g_t8.SupabaseManager.supabase
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.Columns
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -43,7 +45,7 @@ class LoginActivity :AppCompatActivity(){
             try {
                 runBlocking {
                     withContext(Dispatchers.IO) {
-                        SupabaseManager.supabase.auth.signInWith(Email) {
+                        supabase.auth.signInWith(Email) {
                             email = userEmail
                             password = userPassword
                         }
@@ -66,7 +68,9 @@ class LoginActivity :AppCompatActivity(){
     private fun setLoggedInState(isLoggedIn: Boolean) {
         val editor = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE).edit()
         editor.putBoolean(GlobalVariables.KEY_IS_LOGGED_IN, isLoggedIn)
-        editor.putInt(GlobalVariables.USER_ID, 1)
+        val user = supabase.auth.currentUserOrNull()
+        val userid = user?.id
+        editor.putString(GlobalVariables.USER_ID, userid)
         editor.apply()
     }
 

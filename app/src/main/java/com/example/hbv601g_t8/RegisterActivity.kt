@@ -13,6 +13,8 @@ import androidx.appcompat.widget.ViewUtils
 import com.example.hbv601g_t8.databinding.ActivityMainBinding
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
+import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.Columns
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -57,6 +59,7 @@ class RegisterActivity :AppCompatActivity(){
                     }
                 }
                 Toast.makeText(this, "Account Created Successfully!", Toast.LENGTH_SHORT).show()
+                saveUser(applicationContext)
                 redirectToLogin()
             } catch (e: Exception) {
                 Toast.makeText(this,"Account Creation Failed!", Toast.LENGTH_SHORT).show()
@@ -69,11 +72,13 @@ class RegisterActivity :AppCompatActivity(){
     /**
      * Save user to sharepoint, which will later be a database
      */
-    private fun saveUser(user: User, context: Context) {
+    private fun saveUser(context: Context) {
+        val user = SupabaseManager.supabase.auth.currentUserOrNull()
+        val userid = user?.id
         val sharedPreferences = context.getSharedPreferences("UserData", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
-        editor.putInt(GlobalVariables.USER_ID, user.id)
+        editor.putString(GlobalVariables.USER_ID, userid)
         editor.apply()
     }
 

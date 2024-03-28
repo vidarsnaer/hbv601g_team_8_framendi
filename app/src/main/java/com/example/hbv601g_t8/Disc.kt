@@ -10,7 +10,7 @@ data class Disc(
     val name: String,
     val price: Int,
     val type: String,
-    val user_id: Int,
+    val user_id: String,
     val colour: String,
     val latitude: Double,
     val longitude: Double
@@ -24,5 +24,5 @@ data class NewDiscCreation (
     val name: String,
     val type: String,
     val colour: String,
-    val user_id: Int
+    val user_id: String
 )

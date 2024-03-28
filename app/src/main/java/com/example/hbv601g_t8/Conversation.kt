@@ -5,16 +5,16 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Conversation(
     val conversationid: Int,
-    val buyerid: Int,
+    val buyerid: String,
     val conversation_ended: Boolean,
-    val sellerid: Int,
+    val sellerid: String,
     val conversation_title: String
 )
 
 @Serializable
 data class newConversationCreation(
-    val buyerid: Int,
+    val buyerid: String,
     val conversation_ended: Boolean,
-    val sellerid: Int,
+    val sellerid: String,
     val conversation_title: String
 )

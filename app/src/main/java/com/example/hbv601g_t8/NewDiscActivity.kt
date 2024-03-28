@@ -166,7 +166,7 @@ class NewDiscActivity : AppCompatActivity() {
                 title,
                 type,
                 color,
-                1
+                "0"
             )
 
             runBlocking {

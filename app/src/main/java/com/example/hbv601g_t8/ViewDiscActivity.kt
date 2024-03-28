@@ -22,7 +22,7 @@ import kotlin.properties.Delegates
 class ViewDiscActivity: AppCompatActivity() {
 
     private var discid : Int = 0
-    private var discOwnerId: Int = 0
+    private var discOwnerId: String = "0"
     private lateinit var title : TextView
     private lateinit var price : TextView
     private lateinit var condition : TextView
@@ -53,7 +53,7 @@ class ViewDiscActivity: AppCompatActivity() {
         val bundle = intent.extras
         if (bundle != null) {
             discid = bundle.getInt("discid")
-            discOwnerId = bundle.getInt("discOwnerId")
+            discOwnerId = bundle.getString("discOwnerId").toString()
         }
 
         suspend fun selectDiscInfoFromDatabase() {
@@ -105,7 +105,7 @@ class ViewDiscActivity: AppCompatActivity() {
         messageOwner.setOnClickListener {
 
             val newConversation = newConversationCreation (
-                9,
+                "9",
                 false,
                 discOwnerId,
                 "New Conversation Test"
@@ -171,7 +171,7 @@ class ViewDiscActivity: AppCompatActivity() {
             startActivity(intent)
         }
 
-        if (discInfo.user_id == 1) {
+        if (discInfo.user_id == "1") {
             editDiscInfo.visibility = View.VISIBLE
         }
 
