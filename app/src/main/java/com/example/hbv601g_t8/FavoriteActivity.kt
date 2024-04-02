@@ -1,5 +1,6 @@
 package com.example.hbv601g_t8
 
+import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,23 +18,27 @@ class FavoriteActivity : AppCompatActivity() {
     private lateinit var allDiscsList: List<Disc>
     private lateinit var favoriteMark: List<FavoriteMark>
     private lateinit var favoriteDiscs: List<Disc>
+    private lateinit var currentUserId : String
 
     @Serializable
     data class FavoriteMark(
         val id : Int,
         val disc_discid : Int,
-        val user_id : Int
+        val user_id : String
     )
 
     @Serializable
     data class AddFavoriteMark(
         val disc_discid : Int,
-        val user_id : Int
+        val user_id : String
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.favorites)
+
+        val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
+        currentUserId = prefs.getString(GlobalVariables.USER_ID, "No id found").toString()
 
         //TODO: Get favorites from db
 
@@ -42,7 +47,7 @@ class FavoriteActivity : AppCompatActivity() {
                 allDiscsList = SupabaseManager.supabase.from("discs").select().decodeList()
                 favoriteMark = SupabaseManager.supabase.from("favorite").select {
                     filter {
-                        eq("user_id", 1)
+                        eq("user_id", currentUserId)
                     }
                 }.decodeList()
             }

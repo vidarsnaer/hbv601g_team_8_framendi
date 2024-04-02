@@ -1,5 +1,6 @@
 package com.example.hbv601g_t8
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -21,8 +22,8 @@ import kotlin.properties.Delegates
 
 class ViewDiscActivity: AppCompatActivity() {
 
-    private var discid : Int = 0
-    private var discOwnerId: String = "0"
+    private var discid by Delegates.notNull<Int>()
+    private lateinit var discOwnerId: String
     private lateinit var title : TextView
     private lateinit var price : TextView
     private lateinit var condition : TextView
@@ -38,10 +39,9 @@ class ViewDiscActivity: AppCompatActivity() {
     private lateinit var editDiscInfo: Button
     private lateinit var favouriteMark: List<FavoriteActivity.FavoriteMark>
 
-    private var inFavorites = -1
 
     //TODO: nota rétt userId
-    private var currentUserId : Long = 1.toLong()
+    private lateinit var currentUserId : String
     private var ownerId : Long = (-1).toLong()
     private var conversationTitle : String = ""
 
@@ -56,6 +56,9 @@ class ViewDiscActivity: AppCompatActivity() {
             discOwnerId = bundle.getString("discOwnerId").toString()
         }
 
+        val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
+        currentUserId = prefs.getString(GlobalVariables.USER_ID, "No id found").toString()
+
         suspend fun selectDiscInfoFromDatabase() {
             withContext(Dispatchers.IO) {
                 discInfo = SupabaseManager.supabase.from("discs").select {
@@ -65,7 +68,7 @@ class ViewDiscActivity: AppCompatActivity() {
                 }.decodeSingle()
                 favouriteMark = SupabaseManager.supabase.from("favorite").select {
                     filter {
-                        eq("user_id", 1)
+                        eq("user_id", currentUserId)
                     }
                 }.decodeList()
             }
@@ -105,7 +108,7 @@ class ViewDiscActivity: AppCompatActivity() {
         messageOwner.setOnClickListener {
 
             val newConversation = newConversationCreation (
-                "9",
+                currentUserId,
                 false,
                 discOwnerId,
                 "New Conversation Test"
@@ -137,7 +140,7 @@ class ViewDiscActivity: AppCompatActivity() {
 
         favorites.setOnClickListener{
             if(!favorited){
-                val addToFavourite = FavoriteActivity.AddFavoriteMark(discid, 1)
+                val addToFavourite = FavoriteActivity.AddFavoriteMark(discid, currentUserId)
                 favorites.setBackgroundResource(R.drawable.baseline_favorite_24)
                 Toast.makeText(this, "Added to favorites", Toast.LENGTH_SHORT).show()
                 runBlocking {
@@ -154,7 +157,7 @@ class ViewDiscActivity: AppCompatActivity() {
                         SupabaseManager.supabase.from("favorite").delete {
                             filter {
                                 eq("disc_discid", discid)
-                                eq("user_id", 1)
+                                eq("user_id", currentUserId)
                             }
                         }
                     }

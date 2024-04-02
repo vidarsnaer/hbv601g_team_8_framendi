@@ -1,5 +1,6 @@
 package com.example.hbv601g_t8
 
+import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -13,6 +14,7 @@ import kotlinx.coroutines.withContext
 class MyDiscsActivity : AppCompatActivity() {
     private lateinit var myDiscsList: List<Disc>
     private lateinit var recyclerView: RecyclerView
+    private lateinit var currentUserId : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +24,9 @@ class MyDiscsActivity : AppCompatActivity() {
         myDiscsText.title = getString(R.string.my_discs)
 
         myDiscsList = emptyList()
+
+        val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
+        currentUserId = prefs.getString(GlobalVariables.USER_ID, "No id found").toString()
 
         runBlocking {
             selectMyDiscsFromDatabase()
@@ -37,7 +42,7 @@ class MyDiscsActivity : AppCompatActivity() {
         withContext(Dispatchers.IO) {
             myDiscsList = SupabaseManager.supabase.from("discs").select {
                 filter {
-                    eq("user_id", 1)
+                    eq("user_id", currentUserId)
                 }
             }.decodeList<Disc>()
         }
