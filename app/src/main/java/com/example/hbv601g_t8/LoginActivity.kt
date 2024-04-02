@@ -21,14 +21,14 @@ import kotlinx.coroutines.withContext
 
 class LoginActivity :AppCompatActivity(){
 
-    private lateinit var username : EditText
+    private lateinit var email : EditText
     private lateinit var password : EditText
     private lateinit var loginButton : Button
     override fun onCreate(savedInstanceState: Bundle?)  {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.login)
 
-        username = findViewById(R.id.username)
+        email = findViewById(R.id.email)
         password = findViewById(R.id.password)
         loginButton = findViewById(R.id.loginButton)
 
@@ -39,7 +39,7 @@ class LoginActivity :AppCompatActivity(){
 
         loginButton.setOnClickListener(View.OnClickListener {
 
-            val userEmail = username.text.toString()
+            val userEmail = email.text.toString()
             val userPassword = password.text.toString()
 
             try {

@@ -17,14 +17,21 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.hbv601g_t8.SupabaseManager.supabase
 import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.user.UserInfo
+import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.result.PostgrestResult
+import io.github.jan.supabase.postgrest.rpc
+import io.ktor.util.Identity.decode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.put
+import org.json.JSONObject
 import javax.json.Json
 import javax.json.JsonObject
 
@@ -34,16 +41,12 @@ class SettingsActivity :AppCompatActivity(){
     private lateinit var changeEmail : Button
     private lateinit var changePassword : Button
     private lateinit var deleteAccount : Button
-    private lateinit var loggedInUser : User
     private lateinit var user : Auth
 
     override fun onCreate(savedInstanceState: Bundle?)  {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.settings)
-
-        val prefs = getSharedPreferences(GlobalVariables.USER_ID, Context.MODE_PRIVATE)
-        val userId = prefs.getInt(GlobalVariables.USER_ID, 0)
 
         runBlocking {
             withContext(Dispatchers.IO) {
@@ -221,15 +224,30 @@ class SettingsActivity :AppCompatActivity(){
         delete.setOnClickListener( View.OnClickListener {
             val password = dialog.findViewById<EditText>(R.id.delete_password)
             val passwordS = password.text.toString()
+            var correctPassword = false
+            runBlocking {
+                val result: PostgrestResult = supabase.postgrest.rpc(
+                    function = "check_current_password",
+                    parameters = buildJsonObject {
+                        put("current_plain_password", passwordS)
+                    }
+                )
+                correctPassword = result.data.toBooleanStrict()
+                println(correctPassword)
+            }
 
-            if (passwordS != loggedInUser.password){
+            if(!correctPassword){
                 Toast.makeText(this, "Incorrect password", Toast.LENGTH_SHORT).show()
             }
             else{
-                // TODO: delete account in db
+                Toast.makeText(this, "Account deleted", Toast.LENGTH_SHORT).show()
+
+                runBlocking {
+                    supabase.postgrest.rpc("delete_user")
+                }
 
                 val editor = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE).edit()
-                editor.putBoolean(GlobalVariables.KEY_IS_LOGGED_IN, false)
+                editor.clear()
                 editor.apply()
 
                 // go to the start page
