@@ -2,6 +2,9 @@ package com.example.hbv601g_t8
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.AsyncTask
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -9,16 +12,20 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import com.bumptech.glide.Glide
+import com.example.hbv601g_t8.SupabaseManager.supabase
 import io.github.jan.supabase.postgrest.from
-import io.github.jan.supabase.postgrest.query.Columns
-import io.ktor.util.Identity.decode
+import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
 import kotlin.properties.Delegates
+
 
 class ViewDiscActivity: AppCompatActivity() {
 
@@ -39,11 +46,12 @@ class ViewDiscActivity: AppCompatActivity() {
     private lateinit var editDiscInfo: Button
     private lateinit var favouriteMark: List<FavoriteActivity.FavoriteMark>
 
-
-    //TODO: nota rétt userId
     private lateinit var currentUserId : String
     private var ownerId : Long = (-1).toLong()
     private var conversationTitle : String = ""
+    private lateinit var imageUrl : String
+    private lateinit var imageBitmap : Bitmap
+
 
 
     override fun onCreate(savedInstanceState: Bundle?)  {
@@ -74,9 +82,35 @@ class ViewDiscActivity: AppCompatActivity() {
             }
         }
 
+        suspend fun loadImageFromUrl(imageUrl: String): Bitmap? {
+            return try {
+                val url = URL(imageUrl)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.doInput = true
+                connection.connect()
+                val input = connection.inputStream
+                BitmapFactory.decodeStream(input)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                null
+            }
+        }
+
+        image = findViewById(R.id.image)
+
         runBlocking {
             selectDiscInfoFromDatabase()
+            imageUrl = supabase.storage.from("Images").publicUrl("${discInfo.discid}/image")
+            GlobalScope.launch(Dispatchers.IO) {
+                val bitmap = loadImageFromUrl(imageUrl)
+                bitmap?.let {
+                    withContext(Dispatchers.Main) {
+                        image.setImageBitmap(it)
+                    }
+                }
+            }
         }
+
 
         title = findViewById(R.id.title)
         title.text = discInfo.name
@@ -90,9 +124,10 @@ class ViewDiscActivity: AppCompatActivity() {
         color.text = discInfo.colour
         description = findViewById(R.id.description)
         description.text = discInfo.description
-        image = findViewById(R.id.image)
-        image.setImageResource(R.drawable.frisbee)
 
+
+
+        /*
         nextImage = findViewById(R.id.next_image)
         prevImage = findViewById(R.id.previous_image)
 
@@ -102,7 +137,7 @@ class ViewDiscActivity: AppCompatActivity() {
 
         prevImage.setOnClickListener{
             Toast.makeText(this, "Previous image", Toast.LENGTH_SHORT).show()
-        }
+        }*/
 
         messageOwner = findViewById(R.id.message_owner)
         messageOwner.setOnClickListener {
@@ -179,4 +214,8 @@ class ViewDiscActivity: AppCompatActivity() {
         }
 
     }
+
+    // Call this function from your activity or fragment
+
+
 }

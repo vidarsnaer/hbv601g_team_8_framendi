@@ -1,5 +1,6 @@
 package com.example.hbv601g_t8
 
+import android.graphics.Bitmap
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -24,5 +25,6 @@ data class NewDiscCreation (
     val name: String,
     val type: String,
     val colour: String,
-    val user_id: String
+    val user_id: String,
+    val quantity: Int
 )
