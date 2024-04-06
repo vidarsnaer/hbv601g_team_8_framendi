@@ -3,6 +3,7 @@ package com.example.hbv601g_t8
 import android.Manifest
 import android.app.Activity
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -50,6 +51,7 @@ class NewDiscActivity : AppCompatActivity() {
     private lateinit var priceText: EditText
     private lateinit var descriptionText: EditText
     private lateinit var quantityText: EditText
+    private lateinit var currentUserId : String
     private val FILE_NAME = "photo.jpg"
     private val IMAGE_CHOOSE = 1000
     private val PERMISSION_CODE = 1001
@@ -67,6 +69,10 @@ class NewDiscActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.newdisc)
+
+        val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
+        currentUserId = prefs.getString(GlobalVariables.USER_ID, "No id found").toString()
+
 
         buttonPhoto = findViewById(R.id.buttonPhoto)
         btnChoose = findViewById(R.id.btnChoose)
@@ -166,7 +172,7 @@ class NewDiscActivity : AppCompatActivity() {
                 title,
                 type,
                 color,
-                "0"
+                currentUserId
             )
 
             runBlocking {
