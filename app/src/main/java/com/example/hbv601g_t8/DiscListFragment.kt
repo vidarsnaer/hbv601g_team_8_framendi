@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
@@ -19,23 +18,13 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hbv601g_t8.databinding.DiscListFragmentBinding
 import kotlin.math.ceil
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Spinner
 import android.widget.Toast
 import com.example.hbv601g_t8.SupabaseManager.supabase
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -55,10 +44,8 @@ class DiscListFragment : Fragment() {
     private lateinit var filterMaxPrice: String
     private lateinit var filterType: String
     private lateinit var filterState: String
-    private lateinit var clearFilterButton: Button
+    //private lateinit var clearFilterButton: Button
     private lateinit var discAdapter: DiscAdapter
-    private var imageBitmapOne : Bitmap? = null
-    private lateinit var image : ImageView
 
 
     private val binding get() = _binding!!
@@ -95,7 +82,7 @@ class DiscListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         newDiscList = emptyList()
 
@@ -110,7 +97,7 @@ class DiscListFragment : Fragment() {
         // Update the slider to reflect hardcoded location settings
 
         newDiscList = emptyList()
-        discImages = mutableMapOf<Int, Bitmap>()
+        discImages = mutableMapOf()
 
         suspend fun loadImageFromUrl(imageUrl: String): Bitmap? = withContext(Dispatchers.IO) {
             return@withContext try {
@@ -150,7 +137,7 @@ class DiscListFragment : Fragment() {
             adapter = discAdapter
         }
 
-        binding.radiusSlider.addOnChangeListener { slider, value, fromUser ->
+        binding.radiusSlider.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
                 updateSliderText(value)
                 filterDiscsByRadius(value.toDouble())
@@ -214,7 +201,7 @@ class DiscListFragment : Fragment() {
 
             binding.radiusSlider.apply {
                 valueFrom = 10f  // Minimum filtering distance is 10 km
-                valueTo = safeMaxDistance.toFloat()  // Maximum distance based on the farthest disc
+                valueTo = safeMaxDistance  // Maximum distance based on the farthest disc
                 stepSize = 10f  // Step size of 10 km
                 value = valueTo  // Start with the slider at "All"
             }
@@ -268,7 +255,7 @@ class DiscListFragment : Fragment() {
 
     private suspend fun selectAllDiscsFromDatabase() {
         withContext(Dispatchers.IO) {
-            newDiscList = SupabaseManager.supabase.from("discs").select().decodeList<Disc>()
+            newDiscList = supabase.from("discs").select().decodeList<Disc>()
         }
     }
 
@@ -279,7 +266,7 @@ class DiscListFragment : Fragment() {
 
         runBlocking {
             withContext(Dispatchers.IO) {
-                filteredDiscList = SupabaseManager.supabase.from("discs").select {
+                filteredDiscList = supabase.from("discs").select {
                     filter {
                         if (filterState != "Any")  {
                             eq("condition", filterState)
