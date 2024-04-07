@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
@@ -20,6 +21,7 @@ import com.example.hbv601g_t8.databinding.DiscListFragmentBinding
 import kotlin.math.ceil
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.Toast
 import com.example.hbv601g_t8.SupabaseManager.supabase
@@ -27,9 +29,13 @@ import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -43,6 +49,7 @@ class DiscListFragment : Fragment() {
 
     private var _binding: DiscListFragmentBinding? = null
     private lateinit var newDiscList: List<Disc>
+    private lateinit var discImages: MutableMap<Int, Bitmap>
     private lateinit var filteredDiscList: List<Disc>
     private lateinit var filterMinPrice: String
     private lateinit var filterMaxPrice: String
@@ -50,6 +57,9 @@ class DiscListFragment : Fragment() {
     private lateinit var filterState: String
     private lateinit var clearFilterButton: Button
     private lateinit var discAdapter: DiscAdapter
+    private var imageBitmapOne : Bitmap? = null
+    private lateinit var image : ImageView
+
 
     private val binding get() = _binding!!
 
@@ -100,14 +110,40 @@ class DiscListFragment : Fragment() {
         // Update the slider to reflect hardcoded location settings
 
         newDiscList = emptyList()
+        discImages = mutableMapOf<Int, Bitmap>()
+
+        suspend fun loadImageFromUrl(imageUrl: String): Bitmap? = withContext(Dispatchers.IO) {
+            return@withContext try {
+                val url = URL(imageUrl)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.doInput = true
+                connection.connect()
+                val input = connection.inputStream
+                BitmapFactory.decodeStream(input)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                null
+            }
+        }
+
+        suspend fun getImages(){
+            for (disc in newDiscList) {
+                val imageUrl = supabase.storage.from("Images").publicUrl("${disc.discid}/image")
+                val bitmap = loadImageFromUrl(imageUrl)
+                bitmap?.let {
+                    discImages[disc.discid] = it
+                }
+            }
+        }
 
         runBlocking {
             selectAllDiscsFromDatabase()
+            getImages()
         }
 
         updateSliderMaxDistance()
 
-        discAdapter = DiscAdapter(newDiscList)
+        discAdapter = DiscAdapter(newDiscList, discImages)
 
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -209,7 +245,7 @@ class DiscListFragment : Fragment() {
             }
         }
         // Update the display list and adapter
-        discAdapter.updateData(filteredDiscs)
+        discAdapter.updateData(filteredDiscs, discImages)
         Log.d("DiscListFragment", "Displayed discs count: ${filteredDiscs.size}")
     }
 
@@ -262,7 +298,7 @@ class DiscListFragment : Fragment() {
 
         if (filteredDiscList.isNotEmpty()) {
             val recyclerView = binding.recyclerView
-            recyclerView.adapter = DiscAdapter(filteredDiscList)
+            recyclerView.adapter = DiscAdapter(filteredDiscList, discImages)
         } else {
             Toast.makeText(requireContext(), "No discs matches your filter", Toast.LENGTH_SHORT).show()
         }
@@ -276,8 +312,9 @@ class DiscListFragment : Fragment() {
         }
 
         val recyclerView = binding.recyclerView
-        recyclerView.adapter = DiscAdapter(newDiscList)
+        recyclerView.adapter = DiscAdapter(newDiscList, discImages)
         println("filters have been cleared")
     }
+
 
 }
