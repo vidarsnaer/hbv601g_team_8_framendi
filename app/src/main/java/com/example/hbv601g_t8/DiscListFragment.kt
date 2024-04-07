@@ -3,6 +3,8 @@
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
@@ -16,17 +18,19 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hbv601g_t8.databinding.DiscListFragmentBinding
 import kotlin.math.ceil
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Spinner
 import android.widget.Toast
+import com.example.hbv601g_t8.SupabaseManager.supabase
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
 
 
-interface FilterListener {
+ interface FilterListener {
     fun onFiltersApplied(priceMin: String, priceMax: String, state: String, type: String)
 }
 
@@ -34,13 +38,15 @@ class DiscListFragment : Fragment() {
 
     private var _binding: DiscListFragmentBinding? = null
     private lateinit var newDiscList: List<Disc>
+    private lateinit var discImages: MutableMap<Int, Bitmap>
     private lateinit var filteredDiscList: List<Disc>
     private lateinit var filterMinPrice: String
     private lateinit var filterMaxPrice: String
     private lateinit var filterType: String
     private lateinit var filterState: String
-    private lateinit var clearFilterButton: Button
+    //private lateinit var clearFilterButton: Button
     private lateinit var discAdapter: DiscAdapter
+
 
     private val binding get() = _binding!!
 
@@ -76,7 +82,7 @@ class DiscListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         newDiscList = emptyList()
 
@@ -91,21 +97,47 @@ class DiscListFragment : Fragment() {
         // Update the slider to reflect hardcoded location settings
 
         newDiscList = emptyList()
+        discImages = mutableMapOf()
+
+        suspend fun loadImageFromUrl(imageUrl: String): Bitmap? = withContext(Dispatchers.IO) {
+            return@withContext try {
+                val url = URL(imageUrl)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.doInput = true
+                connection.connect()
+                val input = connection.inputStream
+                BitmapFactory.decodeStream(input)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                null
+            }
+        }
+
+        suspend fun getImages(){
+            for (disc in newDiscList) {
+                val imageUrl = supabase.storage.from("Images").publicUrl("${disc.discid}/image")
+                val bitmap = loadImageFromUrl(imageUrl)
+                bitmap?.let {
+                    discImages[disc.discid] = it
+                }
+            }
+        }
 
         runBlocking {
             selectAllDiscsFromDatabase()
+            getImages()
         }
 
         updateSliderMaxDistance()
 
-        discAdapter = DiscAdapter(newDiscList)
+        discAdapter = DiscAdapter(newDiscList, discImages)
 
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = discAdapter
         }
 
-        binding.radiusSlider.addOnChangeListener { slider, value, fromUser ->
+        binding.radiusSlider.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
                 updateSliderText(value)
                 filterDiscsByRadius(value.toDouble())
@@ -169,7 +201,7 @@ class DiscListFragment : Fragment() {
 
             binding.radiusSlider.apply {
                 valueFrom = 10f  // Minimum filtering distance is 10 km
-                valueTo = safeMaxDistance.toFloat()  // Maximum distance based on the farthest disc
+                valueTo = safeMaxDistance  // Maximum distance based on the farthest disc
                 stepSize = 10f  // Step size of 10 km
                 value = valueTo  // Start with the slider at "All"
             }
@@ -200,7 +232,7 @@ class DiscListFragment : Fragment() {
             }
         }
         // Update the display list and adapter
-        discAdapter.updateData(filteredDiscs)
+        discAdapter.updateData(filteredDiscs, discImages)
         Log.d("DiscListFragment", "Displayed discs count: ${filteredDiscs.size}")
     }
 
@@ -223,7 +255,7 @@ class DiscListFragment : Fragment() {
 
     private suspend fun selectAllDiscsFromDatabase() {
         withContext(Dispatchers.IO) {
-            newDiscList = SupabaseManager.supabase.from("discs").select().decodeList<Disc>()
+            newDiscList = supabase.from("discs").select().decodeList<Disc>()
         }
     }
 
@@ -234,7 +266,7 @@ class DiscListFragment : Fragment() {
 
         runBlocking {
             withContext(Dispatchers.IO) {
-                filteredDiscList = SupabaseManager.supabase.from("discs").select {
+                filteredDiscList = supabase.from("discs").select {
                     filter {
                         if (filterState != "Any")  {
                             eq("condition", filterState)
@@ -253,7 +285,7 @@ class DiscListFragment : Fragment() {
 
         if (filteredDiscList.isNotEmpty()) {
             val recyclerView = binding.recyclerView
-            recyclerView.adapter = DiscAdapter(filteredDiscList)
+            recyclerView.adapter = DiscAdapter(filteredDiscList, discImages)
         } else {
             Toast.makeText(requireContext(), "No discs matches your filter", Toast.LENGTH_SHORT).show()
         }
@@ -267,8 +299,9 @@ class DiscListFragment : Fragment() {
         }
 
         val recyclerView = binding.recyclerView
-        recyclerView.adapter = DiscAdapter(newDiscList)
+        recyclerView.adapter = DiscAdapter(newDiscList, discImages)
         println("filters have been cleared")
     }
+
 
 }

@@ -50,11 +50,10 @@ class SettingsActivity :AppCompatActivity(){
 
         runBlocking {
             withContext(Dispatchers.IO) {
-                user = SupabaseManager.supabase.auth
+                user = supabase.auth
             }
         }
 
-        println(user.currentUserOrNull()?.id)
 
         val username = findViewById<TextView>(R.id.username)
         username.text = user.currentUserOrNull()?.userMetadata?.get("name").toString().removeSurrounding("\"")
@@ -164,11 +163,8 @@ class SettingsActivity :AppCompatActivity(){
                     }
                 }
 
-                val email = findViewById<TextView>(R.id.email)
-                email.text = newEmailS
-
                 dialog.dismiss()
-                Toast.makeText(this, "Email updated", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Confirmation email sent to the new email.", Toast.LENGTH_SHORT).show()
             }
         })
         startDialog(dialog)

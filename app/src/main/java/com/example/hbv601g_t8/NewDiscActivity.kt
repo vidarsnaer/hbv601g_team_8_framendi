@@ -3,9 +3,12 @@ package com.example.hbv601g_t8
 import android.Manifest
 import android.app.Activity
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -27,11 +30,14 @@ import androidx.compose.runtime.Composable
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.example.hbv601g_t8.SupabaseManager.supabase
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
+import java.io.ByteArrayOutputStream
 import java.io.File
 
 class NewDiscActivity : AppCompatActivity() {
@@ -50,10 +56,13 @@ class NewDiscActivity : AppCompatActivity() {
     private lateinit var priceText: EditText
     private lateinit var descriptionText: EditText
     private lateinit var quantityText: EditText
+    private lateinit var currentUserId : String
     private val FILE_NAME = "photo.jpg"
     private val IMAGE_CHOOSE = 1000
     private val PERMISSION_CODE = 1001
     private val REQUEST_CODE = 7
+    private var imageAdded = 0
+    private var discId = 0
 
     /**
      * Called when the activity is first created.
@@ -68,6 +77,10 @@ class NewDiscActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.newdisc)
 
+        val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
+        currentUserId = prefs.getString(GlobalVariables.USER_ID, "No id found").toString()
+
+
         buttonPhoto = findViewById(R.id.buttonPhoto)
         btnChoose = findViewById(R.id.btnChoose)
         viewImage = findViewById(R.id.viewImage)
@@ -79,6 +92,7 @@ class NewDiscActivity : AppCompatActivity() {
         quantityText = findViewById(R.id.newDiscQuantity)
 
         buttonPhoto.setOnClickListener {
+            imageAdded = 1
             val takePhotoIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             filePhoto = getPhotoFile(FILE_NAME)
             val providerFile = FileProvider.getUriForFile(this, "com.example.androidcamera.fileprovider", filePhoto)
@@ -146,7 +160,10 @@ class NewDiscActivity : AppCompatActivity() {
 
         suspend fun insertProductIntoSupabase(newDiscCreation: NewDiscCreation) {
             withContext(Dispatchers.IO) {
-                SupabaseManager.supabase.from("discs").insert(newDiscCreation)
+                val result = supabase.from("discs").insert(newDiscCreation) {
+                    select()
+                }.decodeSingle<Disc>()
+                discId = result.discid
             }
         }
 
@@ -166,8 +183,17 @@ class NewDiscActivity : AppCompatActivity() {
                 title,
                 type,
                 color,
-                "0"
+                currentUserId,
+                quantity
             )
+
+            if(imageAdded == 1){
+                val imageInBytes = imageToBitmap(viewImage)
+                runBlocking {
+                    val bucket = supabase.storage.from("Images")
+                    bucket.upload("$discId/image", imageInBytes, upsert = false)
+                }
+            }
 
             runBlocking {
                 insertProductIntoSupabase(newDisc)
@@ -176,6 +202,15 @@ class NewDiscActivity : AppCompatActivity() {
             Toast.makeText(this, "Disc successfully added", Toast.LENGTH_LONG).show()
         }
     }
+
+    private fun imageToBitmap(image: ImageView): ByteArray {
+        val bitmap = (image.drawable as BitmapDrawable).bitmap
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+
+        return stream.toByteArray()
+    }
+
 
     /**
      * Creates a temporary file to store the photo.
@@ -215,6 +250,7 @@ class NewDiscActivity : AppCompatActivity() {
     private fun chooseImageGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
+        imageAdded = 1
         startActivityForResult(intent, IMAGE_CHOOSE)
     }
 
