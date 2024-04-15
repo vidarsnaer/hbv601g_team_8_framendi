@@ -12,6 +12,7 @@ import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import io.agora.rtc2.RtcEngine
 
 class ChatActivity : AppCompatActivity() {
 
@@ -20,8 +21,9 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var messageInput: TextInputEditText
     private lateinit var chatMessages : List<Message>
     private lateinit var newMessage: Message
-    private var chatId : Int = 0
+    private lateinit var rtcEngine: RtcEngine
 
+    private var chatId : Int = 0
     private val currentUserId = 9
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,7 +76,6 @@ class ChatActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Message Must Not Be Empty", Toast.LENGTH_SHORT).show()
             }
-
         }
     }
 

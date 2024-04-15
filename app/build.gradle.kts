@@ -69,7 +69,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
     implementation ("com.google.android.material:material:<latest_version>")
     implementation("androidx.core:core-ktx:1.12.0")
-
-
+    implementation("io.agora.rtc:voice-sdk:4.2.6")
 
 }

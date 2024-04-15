@@ -1,5 +1,6 @@
 package com.example.hbv601g_t8
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -30,10 +31,12 @@ import android.widget.EditText
 import android.widget.PopupWindow
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hbv601g_t8.SupabaseManager.supabase
 import com.google.android.material.button.MaterialButton
+import io.agora.rtc2.IRtcEngineEventHandler
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
 import kotlinx.coroutines.Dispatchers
@@ -48,6 +51,7 @@ class DiscActivity : AppCompatActivity(), FilterListener {
     private lateinit var popupWindow: PopupWindow
     private lateinit var applyFiltersButton: Button
     private lateinit var clearFilterButton: MaterialButton
+    private lateinit var agoraManager: AgoraManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,8 +62,19 @@ class DiscActivity : AppCompatActivity(), FilterListener {
         Toast.makeText(this, id, Toast.LENGTH_SHORT).show()
          */
 
+
+        val REQUESTED_PERMISSIONS = arrayOf(
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.CAMERA
+        )
+
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ActivityCompat.requestPermissions(this, REQUESTED_PERMISSIONS, 22)
+
+        agoraManager = AgoraManager(this)
 
         // Instantiate a PopupWindow
         val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -108,6 +123,8 @@ class DiscActivity : AppCompatActivity(), FilterListener {
 
             onFiltersApplied(priceMin, priceMax, state, type)
 
+            agoraManager.joinChannel("testing", "007eJxTYPDVPG+9e80Kg6lHD/Z07jZ+l7/nfHnl8lCtQJ4jFupZc64oMJgampkaWxilpRgmJpsYJhommpoaWqalGKclWRoYJZqknAiVTWsIZGSQCvvKyMgAgSA+O0NJanFJZl46AwMA0+cg2w==")
+
             popupWindow.dismiss()
         }
 
@@ -145,6 +162,9 @@ class DiscActivity : AppCompatActivity(), FilterListener {
                 // Fragment not found
                 println("Fragment: DiscListFragment not found in clearFilterButton on click listener")
             }
+
+            agoraManager.leaveChannel()
+
         }
 
         //binding.fab.setOnClickListener { view ->
