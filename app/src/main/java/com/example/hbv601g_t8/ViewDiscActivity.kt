@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.AsyncTask
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -12,7 +11,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.bumptech.glide.Glide
 import com.example.hbv601g_t8.SupabaseManager.supabase
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.storage.storage
@@ -139,6 +137,9 @@ class ViewDiscActivity: AppCompatActivity() {
             Toast.makeText(this, "Previous image", Toast.LENGTH_SHORT).show()
         }*/
 
+        //TODO: finna nafn á eiganda disks
+        var discOwnerName = "Siggi"
+
         messageOwner = findViewById(R.id.message_owner)
         messageOwner.setOnClickListener {
 
@@ -146,7 +147,7 @@ class ViewDiscActivity: AppCompatActivity() {
                 currentUserId,
                 false,
                 discOwnerId,
-                "New Conversation Test"
+                "${discOwnerName}: ${discInfo.name}"
             )
             val result : Conversation
 

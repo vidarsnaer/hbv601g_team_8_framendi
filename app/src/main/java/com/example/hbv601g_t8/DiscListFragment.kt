@@ -12,14 +12,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.hbv601g_t8.databinding.DiscListFragmentBinding
-import kotlin.math.ceil
-import android.widget.Toast
 import com.example.hbv601g_t8.SupabaseManager.supabase
+import com.example.hbv601g_t8.databinding.DiscListFragmentBinding
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +27,7 @@ import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import kotlin.math.ceil
 
 
  interface FilterListener {
@@ -152,7 +152,7 @@ class DiscListFragment : Fragment() {
                 fetchUserLocationOnce()  // Fetch the location once permission is confirmed
             }
             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                // Show UI to explain why the permission is needed
+                // TODO: Show UI to explain why the permission is needed?
                 showInContextUI()
             }
             else -> {
@@ -179,7 +179,8 @@ class DiscListFragment : Fragment() {
                 userLocation = locationManager.getLastKnownLocation(provider)
                 updateSliderMaxDistance()
             } else -> {
-            // Consider handling the case where location is null
+                // TODO: Consider handling the case where location is null?
+                // Remove radius filter/slider?
             }
         }
 
@@ -203,20 +204,21 @@ class DiscListFragment : Fragment() {
                 valueFrom = 10f  // Minimum filtering distance is 10 km
                 valueTo = safeMaxDistance  // Maximum distance based on the farthest disc
                 stepSize = 10f  // Step size of 10 km
-                value = valueTo  // Start with the slider at "All"
+                value = valueTo  // Start with the slider at all discs
             }
 
-            updateSliderText(10000000f)  // Show "All" initially
+            updateSliderText(10000000f)  // Show all discs initially
         }
 
     }
 
 
     private fun updateSliderText(distance: Float) {
+        // Breyta í < og þá bara það sem er inn í else?
         binding.radiusText.text = if (distance >= binding.radiusSlider.valueTo) {
-            "All"
+            getString(R.string.radius_all)
         } else {
-            "${distance.toInt()} km"
+            "Showing available discs within ${distance.toInt()} km from your location."
         }
     }
 
