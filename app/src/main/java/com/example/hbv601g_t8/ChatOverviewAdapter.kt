@@ -7,13 +7,13 @@ import com.example.hbv601g_t8.databinding.ChatOverviewItemBinding
 
 class ChatOverviewAdapter(
     private val dataset: List<Conversation>, // Use List<Conversation>
-    private val onClick: (Int) -> Unit // Callback function with the conversation ID
+    private val onClick: (Long) -> Unit // Callback function with the conversation ID
 ) : RecyclerView.Adapter<ChatOverviewAdapter.ChatOverviewViewHolder>() {
 
     class ChatOverviewViewHolder(private val binding: ChatOverviewItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(conversation: Conversation, onClick: (Int) -> Unit) {
-            binding.chatTitle.text = conversation.conversation_title // Set the conversation title
-            itemView.setOnClickListener { onClick(conversation.conversationid) } // Use conversation ID for the click listener
+        fun bind(conversation: Conversation, onClick: (Long) -> Unit) {
+            binding.chatTitle.text = conversation.conversationTitle // Set the conversation title
+            itemView.setOnClickListener { onClick(conversation.conversationID!!) } // Use conversation ID for the click listener
         }
     }
 

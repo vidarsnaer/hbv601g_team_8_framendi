@@ -1,17 +1,18 @@
 package com.example.hbv601g_t8
 
+import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.button.MaterialButton
-import java.time.ZonedDateTime
+import com.google.android.material.textfield.TextInputEditText
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.time.ZonedDateTime
 
 class ChatActivity : AppCompatActivity() {
 
@@ -20,20 +21,20 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var messageInput: TextInputEditText
     private lateinit var chatMessages : List<Message>
     private lateinit var newMessage: Message
-    private var chatId : Int = 0
+    private var chatId: Long = 0
 
-    private val currentUserId = 9
+    private var currentUserId: Long = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
+        currentUserId = getCurrentUserId()
+
         val bundle = intent.extras
         if (bundle != null) {
-            chatId = bundle.getInt("CHAT_ID")
+            chatId = bundle.getLong("CHAT_ID")
         }
-
-        println(chatId)
 
         runBlocking {
             getMessagesFromDatabase()
@@ -41,7 +42,6 @@ class ChatActivity : AppCompatActivity() {
 
         recyclerView = findViewById<RecyclerView>(R.id.chatRecyclerView).apply {
             layoutManager = LinearLayoutManager(this@ChatActivity)
-            //adapter = com.example.hbv601g_t8.ChatAdapter(chatMessages, currentUserId)
             adapter = ChatAdapter(chatMessages, currentUserId)
         }
 
@@ -55,10 +55,11 @@ class ChatActivity : AppCompatActivity() {
             val messageText = messageInput.text.toString()
 
             if (messageText.isNotEmpty()) {
-                newMessage = Message(chatId, messageText, false, currentUserId, ZonedDateTime.now().toString())
+                newMessage = Message(conversationID = chatId, message = messageText, read = false, senderID = currentUserId, sentAt = ZonedDateTime.now().toString())
 
                 runBlocking {
-                    sendMessageToDatabase()
+                    ConversationService().sendMessage(conversationId = chatId, messageText = messageText)
+                    //sendMessageToDatabase()
                     getMessagesFromDatabase()
                 }
 
@@ -79,6 +80,8 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private suspend fun getMessagesFromDatabase () {
+        chatMessages = ConversationService().getMessages(conversationId = chatId)!!
+        /*
         withContext(Dispatchers.IO) {
             chatMessages = SupabaseManager.supabase.from("message").select {
                 filter {
@@ -86,12 +89,18 @@ class ChatActivity : AppCompatActivity() {
                 }
             }.decodeList()
         }
+         */
     }
 
     private suspend fun sendMessageToDatabase () {
         withContext(Dispatchers.IO) {
             SupabaseManager.supabase.from("message").insert(newMessage)
         }
+    }
+
+    private fun getCurrentUserId(): Long {
+        val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        return sharedPreferences.getLong(GlobalVariables.USER_ID, -1)  // Return -1 or another invalid value as default if not found
     }
 
 }

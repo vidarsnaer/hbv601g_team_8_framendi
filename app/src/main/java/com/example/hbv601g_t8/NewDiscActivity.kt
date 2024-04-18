@@ -2,7 +2,6 @@ package com.example.hbv601g_t8
 
 import android.Manifest
 import android.app.Activity
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,11 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -26,19 +21,13 @@ import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.Composable
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.example.hbv601g_t8.SupabaseManager.supabase
-import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.storage.storage
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.Serializable
 import java.io.ByteArrayOutputStream
 import java.io.File
+import kotlin.random.Random
 
 class NewDiscActivity : AppCompatActivity() {
 
@@ -56,13 +45,13 @@ class NewDiscActivity : AppCompatActivity() {
     private lateinit var priceText: EditText
     private lateinit var descriptionText: EditText
     private lateinit var quantityText: EditText
-    private lateinit var currentUserId : String
+    private var currentUserId : Long = -1
     private val FILE_NAME = "photo.jpg"
     private val IMAGE_CHOOSE = 1000
     private val PERMISSION_CODE = 1001
     private val REQUEST_CODE = 7
     private var imageAdded = 0
-    private var discId = 0
+    private var discId: Long = -1
 
     /**
      * Called when the activity is first created.
@@ -77,8 +66,8 @@ class NewDiscActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.newdisc)
 
-        val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
-        currentUserId = prefs.getString(GlobalVariables.USER_ID, "No id found").toString()
+
+        currentUserId = getCurrentUserId()
 
 
         buttonPhoto = findViewById(R.id.buttonPhoto)
@@ -158,13 +147,17 @@ class NewDiscActivity : AppCompatActivity() {
             }
         }
 
-        suspend fun insertProductIntoSupabase(newDiscCreation: NewDiscCreation) {
+        suspend fun insertProductIntoSupabase(newDisc: Disc) {
+            val result = DiscService().addDisc(newDisc)!!
+            discId = result.discId!!
+            /*
             withContext(Dispatchers.IO) {
                 val result = supabase.from("discs").insert(newDiscCreation) {
                     select()
                 }.decodeSingle<Disc>()
                 discId = result.discid
             }
+            */
         }
 
         submitNewDiscButton.setOnClickListener {
@@ -175,17 +168,10 @@ class NewDiscActivity : AppCompatActivity() {
             val quantity = quantityText.text.toString().toInt()
             val state = selectedState
             val type = selectedType
+            val latitude = Random.nextDouble(64.00, 66.00)
+            val longitude = Random.nextDouble(-22.00, -14.00)
 
-            val newDisc = NewDiscCreation(
-                price,
-                state,
-                description,
-                title,
-                type,
-                color,
-                currentUserId,
-                quantity
-            )
+            val newDisc = Disc(name = title, description = description, type = type, condition = state, colour = color, price = price, userId = currentUserId, latitude = latitude, longitude = longitude)
 
             if(imageAdded == 1){
                 val imageInBytes = imageToBitmap(viewImage)
@@ -282,5 +268,10 @@ class NewDiscActivity : AppCompatActivity() {
             }
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
+    }
+
+    private fun getCurrentUserId(): Long {
+        val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        return sharedPreferences.getLong(GlobalVariables.USER_ID, -1)  // Return -1 or another invalid value as default if not found
     }
 }

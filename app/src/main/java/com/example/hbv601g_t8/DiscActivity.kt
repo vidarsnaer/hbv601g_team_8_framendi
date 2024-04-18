@@ -30,7 +30,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import java.time.ZonedDateTime
 
 class DiscActivity : AppCompatActivity(), FilterListener {
 
@@ -41,7 +40,7 @@ class DiscActivity : AppCompatActivity(), FilterListener {
     private lateinit var applyFiltersButton: Button
     private lateinit var clearFilterButton: MaterialButton
 
-    private lateinit var currentUserId : String
+    private var currentUserId: Long = -1
 
     private lateinit var conversationService: ConversationService
 
@@ -51,12 +50,7 @@ class DiscActivity : AppCompatActivity(), FilterListener {
         conversationService = ConversationService()
 
         val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
-        currentUserId = prefs.getInt(GlobalVariables.USER_ID, -1).toString()
-        /* Get the id from sharedPrefrences
-        val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
-        val id =  prefs.getString(GlobalVariables.USER_ID, "No id found")
-        Toast.makeText(this, id, Toast.LENGTH_SHORT).show()
-         */
+        currentUserId = getCurrentUserId()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -147,14 +141,9 @@ class DiscActivity : AppCompatActivity(), FilterListener {
             }
         }
 
-        //binding.fab.setOnClickListener { view ->
-        //    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-        //        .setAction("Action", null).show()
-        //}
-
         binding.fab.setOnClickListener {
             val intent = Intent(this@DiscActivity, ChatOverviewActivity::class.java)
-                //.apply {putExtra("USER_ID", currentUserId) }
+
             startActivity(intent)
 
             Notification.showNotification(
@@ -301,8 +290,8 @@ class DiscActivity : AppCompatActivity(), FilterListener {
     private fun sendMessageToCustomerService(messageSubject: String, initialMessage: String) {
         lifecycleScope.launch {
             val conversationId = createNewConversationWithCustomerService(messageSubject)
-            if (conversationId != -1) {
-                sendMessageToConversation(conversationId, messageSubject ,initialMessage)
+            if (conversationId != (-1).toLong()) {
+                sendMessageToConversation(conversationId, initialMessage)
                 redirectToChat(conversationId)
             } else {
                 Toast.makeText(this@DiscActivity, "Unable to start conversation with customer service.", Toast.LENGTH_SHORT).show()
@@ -311,31 +300,30 @@ class DiscActivity : AppCompatActivity(), FilterListener {
     }
 
 
-    private fun createNewConversationWithCustomerService(conversationSubject: String): Int {
-        val newConversation = newConversationCreation (
-            currentUserId,
-            false,
-            CUSTOMER_SERVICE_ID,
-            "Customer service: ${conversationSubject}"
-        )
+    private fun createNewConversationWithCustomerService(conversationSubject: String): Long {
         val result : Conversation
         runBlocking {
-            result = conversationService.insertNewConversationToDatabase(newConversation)
+            result = conversationService.createConversation(sellerId = CUSTOMER_SERVICE_ID, title = "Customer service: ${conversationSubject}")!!
         }
-        return result.conversationid
+        return result.conversationID!!
     }
 
-    private suspend fun sendMessageToConversation(conversationId: Int, subject: String, message: String) {
-        val timestamp = ZonedDateTime.now().toString()
-        var newMessage = Message(conversationId, message, false, currentUserId.toInt(), timestamp)
-        conversationService.insertNewMessageToDatabase(newMessage)
+    private suspend fun sendMessageToConversation(conversationId: Long, message: String) {
+        //val timestamp = ZonedDateTime.now().toString()
+        //var newMessage = Message(conversationID = conversationId, senderID = currentUserId, message = message, sentAt = timestamp, read = false)
+        conversationService.sendMessage(conversationId = conversationId, messageText = message)
     }
 
-    private fun redirectToChat(conversationId: Int) {
+    private fun redirectToChat(conversationId: Long) {
         val intent = Intent(this, ChatActivity::class.java).apply {
             putExtra("CHAT_ID", conversationId)
         }
         startActivity(intent)
+    }
+
+    private fun getCurrentUserId(): Long {
+        val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        return sharedPreferences.getLong(GlobalVariables.USER_ID, -1)  // Return -1 or another invalid value as default if not found
     }
 
 }

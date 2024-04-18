@@ -1,30 +1,20 @@
 package com.example.hbv601g_t8
 
-import android.graphics.Bitmap
 import kotlinx.serialization.Serializable
+
 
 @Serializable
 data class Disc(
-    val discid: Int,
-    val condition: String,
-    val description: String,
+    val discId: Long? = null,
     val name: String,
-    val price: Int,
+    val description: String,
     val type: String,
-    val user_id: String,
+    val condition: String,
     val colour: String,
+    val price: Int,
+    val userId: Long,
     val latitude: Double,
     val longitude: Double
+    //,val images: List<Image> = listOf()
 )
 
-@Serializable
-data class NewDiscCreation (
-    val price: Int,
-    val condition: String,
-    val description: String,
-    val name: String,
-    val type: String,
-    val colour: String,
-    val user_id: String,
-    val quantity: Int
-)

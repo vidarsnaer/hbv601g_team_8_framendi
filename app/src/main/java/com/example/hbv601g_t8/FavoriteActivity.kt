@@ -4,17 +4,13 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.github.jan.supabase.postgrest.from
-import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.Serializable
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -23,30 +19,18 @@ class FavoriteActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var allDiscsList: List<Disc>
-    private lateinit var favoriteMark: List<FavoriteMark>
+    private lateinit var favoriteMark: List<Favorite>
     private lateinit var favoriteDiscs: List<Disc>
-    private lateinit var currentUserId : String
+    private var currentUserId : Long = -1
     private lateinit var discImages: MutableMap<Int, Bitmap>
 
-    @Serializable
-    data class FavoriteMark(
-        val id : Int,
-        val disc_discid : Int,
-        val user_id : String
-    )
-
-    @Serializable
-    data class AddFavoriteMark(
-        val disc_discid : Int,
-        val user_id : String
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.favorites)
 
         val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
-        currentUserId = prefs.getString(GlobalVariables.USER_ID, "No id found").toString()
+        currentUserId = prefs.getLong(GlobalVariables.USER_ID, -1)
 
         discImages = mutableMapOf<Int, Bitmap>()
 
@@ -66,14 +50,19 @@ class FavoriteActivity : AppCompatActivity() {
 
         suspend fun getImages(){
             for (disc in allDiscsList) {
-                val imageUrl = SupabaseManager.supabase.storage.from("Images").publicUrl("${disc.discid}/image")
-                val bitmap = loadImageFromUrl(imageUrl)
-                bitmap?.let {
-                    discImages[disc.discid] = it
+                if(disc.discId != null) {
+                    val intDiscId = disc.discId.toInt()
+                    val imageUrl = SupabaseManager.supabase.storage.from("Images")
+                        .publicUrl("${intDiscId}/image")
+                    val bitmap = loadImageFromUrl(imageUrl)
+                    bitmap?.let {
+                        discImages[intDiscId] = it
+                    }
                 }
             }
         }
 
+        /*
         runBlocking {
             withContext(Dispatchers.IO) {
                 allDiscsList = SupabaseManager.supabase.from("discs").select().decodeList()
@@ -87,7 +76,11 @@ class FavoriteActivity : AppCompatActivity() {
         }
 
         favoriteDiscs = allDiscsList.filter {
-            disc -> favoriteMark.any { mark -> mark.disc_discid == disc.discid }
+            disc -> favoriteMark.any { mark -> mark.discId == disc.discId }
+        }
+         */
+        runBlocking {
+            favoriteDiscs = DiscService().getFavoriteDiscs()!!
         }
 
         println(favoriteDiscs)
@@ -96,5 +89,10 @@ class FavoriteActivity : AppCompatActivity() {
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = DiscAdapter(favoriteDiscs, discImages)
+    }
+
+    private fun getCurrentUserId(): Long {
+        val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        return sharedPreferences.getLong(GlobalVariables.USER_ID, -1)  // Return -1 or another invalid value as default if not found
     }
 }

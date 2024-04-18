@@ -4,5 +4,5 @@ object GlobalVariables {
     var PREFS_NAME = "MyPrefs"
     var KEY_IS_LOGGED_IN = "isLoggedIn"
     var USER_ID = "userid"
-    var CUSTOMER_SERVICE_ID = "-99"
+    var CUSTOMER_SERVICE_ID: Long = -99
 }

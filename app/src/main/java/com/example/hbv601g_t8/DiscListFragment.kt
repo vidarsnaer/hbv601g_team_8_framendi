@@ -19,7 +19,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hbv601g_t8.SupabaseManager.supabase
 import com.example.hbv601g_t8.databinding.DiscListFragmentBinding
-import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -115,10 +114,13 @@ class DiscListFragment : Fragment() {
 
         suspend fun getImages(){
             for (disc in newDiscList) {
-                val imageUrl = supabase.storage.from("Images").publicUrl("${disc.discid}/image")
-                val bitmap = loadImageFromUrl(imageUrl)
-                bitmap?.let {
-                    discImages[disc.discid] = it
+                if(disc.discId != null) {
+                    val intDiscId = disc.discId.toInt()
+                    val imageUrl = supabase.storage.from("Images").publicUrl("${intDiscId}/image")
+                    val bitmap = loadImageFromUrl(imageUrl)
+                    bitmap?.let {
+                        discImages[intDiscId] = it
+                    }
                 }
             }
         }
@@ -214,7 +216,6 @@ class DiscListFragment : Fragment() {
 
 
     private fun updateSliderText(distance: Float) {
-        // Breyta í < og þá bara það sem er inn í else?
         binding.radiusText.text = if (distance >= binding.radiusSlider.valueTo) {
             getString(R.string.radius_all)
         } else {
@@ -256,9 +257,12 @@ class DiscListFragment : Fragment() {
     }
 
     private suspend fun selectAllDiscsFromDatabase() {
+        newDiscList = DiscService().getAllDiscs()!!
+        /*
         withContext(Dispatchers.IO) {
             newDiscList = supabase.from("discs").select().decodeList<Disc>()
         }
+         */
     }
 
     fun filterAndRefreshView() {
@@ -267,6 +271,8 @@ class DiscListFragment : Fragment() {
         filteredDiscList = emptyList()
 
         runBlocking {
+            filteredDiscList = DiscService().filterDiscs(fromPrice = filterMinPrice.toInt(), toPrice = filterMaxPrice.toInt(), type = filterType, condition = filterState, colour = null, name = null)!!
+            /*
             withContext(Dispatchers.IO) {
                 filteredDiscList = supabase.from("discs").select {
                     filter {
@@ -282,7 +288,7 @@ class DiscListFragment : Fragment() {
                         }
                     }
                 }.decodeList<Disc>()
-            }
+            } */
         }
 
         if (filteredDiscList.isNotEmpty()) {

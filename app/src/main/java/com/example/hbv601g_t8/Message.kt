@@ -4,9 +4,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Message(
-    val conversationid: Int,
+    val messageID: Long? = null,
+    val conversationID: Long,
+    val senderID: Long,
     val message: String,
-    val read: Boolean,
-    val senderid: Int,
-    val sent_at: String
+    val sentAt: String,  // TODO: Make sure the date format matches between frontend and backend
+    val read: Boolean
 )
