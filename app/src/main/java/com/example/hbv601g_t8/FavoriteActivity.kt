@@ -38,7 +38,7 @@ class FavoriteActivity : AppCompatActivity() {
         setContentView(R.layout.favorites)
 
         val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
-        currentUserId = prefs.getString(GlobalVariables.USER_ID, "No id found").toString()
+        currentUserId = prefs.getString(GlobalVariables.USER_ID.toString(), "No id found").toString()
 
         //TODO: Get favorites from db
 
