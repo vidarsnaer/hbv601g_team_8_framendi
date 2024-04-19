@@ -12,6 +12,7 @@ import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import io.agora.rtc2.RtcEngine
 
 class ChatActivity : AppCompatActivity() {
 
@@ -20,8 +21,10 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var messageInput: TextInputEditText
     private lateinit var chatMessages : List<Message>
     private lateinit var newMessage: Message
-    private var chatId : Int = 0
+    private lateinit var callButton: MaterialButton
+    private lateinit var agoraManager: AgoraManager
 
+    private var chatId : Int = 0
     private val currentUserId = 9
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +37,8 @@ class ChatActivity : AppCompatActivity() {
         }
 
         println(chatId)
+
+        agoraManager = AgoraManager(this)
 
         runBlocking {
             getMessagesFromDatabase()
@@ -49,6 +54,7 @@ class ChatActivity : AppCompatActivity() {
 
         sendButton = findViewById(R.id.sendButton)
         messageInput = findViewById(R.id.messageInput)
+        callButton = findViewById(R.id.join_call_button)
 
         sendButton.setOnClickListener {
 
@@ -74,7 +80,19 @@ class ChatActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Message Must Not Be Empty", Toast.LENGTH_SHORT).show()
             }
+        }
 
+        callButton.setOnClickListener {
+
+            if (callButton.text.toString() == "Join Call") {
+                callButton.setText(R.string.leave_call)
+                callButton.setTextColor(getColor(R.color.danger))
+                agoraManager.joinChannel("testing", "007eJxTYPDVPG+9e80Kg6lHD/Z07jZ+l7/nfHnl8lCtQJ4jFupZc64oMJgampkaWxilpRgmJpsYJhommpoaWqalGKclWRoYJZqknAiVTWsIZGSQCvvKyMgAgSA+O0NJanFJZl46AwMA0+cg2w==")
+            } else {
+                callButton.setText(R.string.join_call)
+                callButton.setTextColor(getColor(R.color.blue))
+                agoraManager.leaveChannel()
+            }
         }
     }
 

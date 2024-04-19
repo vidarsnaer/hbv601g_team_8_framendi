@@ -13,4 +13,5 @@
     <color name="message_incoming">#FFCC80</color>
     <color name="incoming_message_background">#BBDEFB</color>
     <color name="danger">#cf0000</color>
+    <color name="blue">#0000FF</color>
 </resources>

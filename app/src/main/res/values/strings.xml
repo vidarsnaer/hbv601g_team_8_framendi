@@ -97,6 +97,9 @@
     <string name="password_should_be_at_least_6_characters">Password should be at least 6 characters</string>
     <string name="filter">Filter</string>
     <string name="clear_filter">Clear</string>
+    <string name="join_call">Join Call</string>
+    <string name="leave_call">Leave Call</string>
+    <string name="send">Send</string>
     <string-array name="filter_states">
         <item>Any</item>
         <item>New</item>
