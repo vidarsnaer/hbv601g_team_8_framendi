@@ -10,11 +10,12 @@ import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class MyDiscsActivity : AppCompatActivity() {
     private lateinit var myDiscsList: List<Disc>
     private lateinit var recyclerView: RecyclerView
-    private lateinit var currentUserId : String
+    private lateinit var currentUserId : UUID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +27,7 @@ class MyDiscsActivity : AppCompatActivity() {
         myDiscsList = emptyList()
 
         val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
-        currentUserId = prefs.getString(GlobalVariables.USER_ID, "No id found").toString()
+        currentUserId = GlobalVariables.USER_ID
 
         runBlocking {
             selectMyDiscsFromDatabase()

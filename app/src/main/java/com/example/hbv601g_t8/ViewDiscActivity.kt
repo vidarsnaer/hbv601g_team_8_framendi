@@ -18,6 +18,7 @@ import io.ktor.util.Identity.decode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.util.UUID
 import kotlin.properties.Delegates
 
 class ViewDiscActivity: AppCompatActivity() {
@@ -41,7 +42,7 @@ class ViewDiscActivity: AppCompatActivity() {
 
 
     //TODO: nota rétt userId
-    private lateinit var currentUserId : String
+    private lateinit var currentUserId : UUID
     private var ownerId : Long = (-1).toLong()
     private var conversationTitle : String = ""
 
@@ -57,7 +58,7 @@ class ViewDiscActivity: AppCompatActivity() {
         }
 
         val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
-        currentUserId = prefs.getString(GlobalVariables.USER_ID, "No id found").toString()
+        currentUserId = GlobalVariables.USER_ID
 
         suspend fun selectDiscInfoFromDatabase() {
             withContext(Dispatchers.IO) {
@@ -108,7 +109,7 @@ class ViewDiscActivity: AppCompatActivity() {
         messageOwner.setOnClickListener {
 
             val newConversation = newConversationCreation (
-                currentUserId,
+                currentUserId.toString(),
                 false,
                 discOwnerId,
                 "New Conversation Test"
@@ -140,7 +141,7 @@ class ViewDiscActivity: AppCompatActivity() {
 
         favorites.setOnClickListener{
             if(!favorited){
-                val addToFavourite = FavoriteActivity.AddFavoriteMark(discid, currentUserId)
+                val addToFavourite = FavoriteActivity.AddFavoriteMark(discid, currentUserId.toString())
                 favorites.setBackgroundResource(R.drawable.baseline_favorite_24)
                 Toast.makeText(this, "Added to favorites", Toast.LENGTH_SHORT).show()
                 runBlocking {
@@ -174,7 +175,7 @@ class ViewDiscActivity: AppCompatActivity() {
             startActivity(intent)
         }
 
-        if (discInfo.user_id == "1") {
+        if (discInfo.user_id == GlobalVariables.USER_ID) {
             editDiscInfo.visibility = View.VISIBLE
         }
 

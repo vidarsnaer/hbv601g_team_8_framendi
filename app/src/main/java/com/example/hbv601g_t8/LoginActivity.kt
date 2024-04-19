@@ -3,21 +3,19 @@ package com.example.hbv601g_t8
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.ViewUtils
 import com.example.hbv601g_t8.SupabaseManager.supabase
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.builtin.Email
-import io.github.jan.supabase.postgrest.from
-import io.github.jan.supabase.postgrest.query.Columns
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.util.UUID
+
 
 class LoginActivity :AppCompatActivity(){
 
@@ -70,7 +68,8 @@ class LoginActivity :AppCompatActivity(){
         editor.putBoolean(GlobalVariables.KEY_IS_LOGGED_IN, isLoggedIn)
         val user = supabase.auth.currentUserOrNull()
         val userid = user?.id
-        editor.putString(GlobalVariables.USER_ID, userid)
+        val uuid = UUID.fromString(userid)
+        GlobalVariables.USER_ID = uuid
         editor.apply()
     }
 

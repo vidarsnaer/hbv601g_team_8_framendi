@@ -2,7 +2,6 @@ package com.example.hbv601g_t8
 
 import android.Manifest
 import android.app.Activity
-import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -10,11 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -23,16 +18,13 @@ import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.Composable
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.Serializable
 import java.io.File
+import java.util.UUID
 
 class NewDiscActivity : AppCompatActivity() {
 
@@ -166,7 +158,9 @@ class NewDiscActivity : AppCompatActivity() {
                 title,
                 type,
                 color,
-                "0"
+                GlobalVariables.USER_ID,
+                GlobalVariables.USER_LATITUDE,
+                GlobalVariables.USER_LONGITUDE
             )
 
             runBlocking {
@@ -174,6 +168,10 @@ class NewDiscActivity : AppCompatActivity() {
             }
 
             Toast.makeText(this, "Disc successfully added", Toast.LENGTH_LONG).show()
+
+            val intent = Intent(this@NewDiscActivity, DiscActivity::class.java)
+            startActivity(intent)
+
         }
     }
 

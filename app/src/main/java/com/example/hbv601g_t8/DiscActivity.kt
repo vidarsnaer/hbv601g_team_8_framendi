@@ -42,6 +42,7 @@ import io.github.jan.supabase.gotrue.providers.builtin.Email
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class DiscActivity : AppCompatActivity(), FilterListener {
 
@@ -65,6 +66,13 @@ class DiscActivity : AppCompatActivity(), FilterListener {
             Manifest.permission.RECORD_AUDIO,
             Manifest.permission.CAMERA
         )
+        /*
+        val user = supabase.auth.currentUserOrNull()
+        val userid = user?.id
+        val uuid = UUID.fromString(userid)
+        GlobalVariables.USER_ID = uuid
+
+         */
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
