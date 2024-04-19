@@ -66,11 +66,15 @@ class DiscActivity : AppCompatActivity(), FilterListener {
             Manifest.permission.RECORD_AUDIO,
             Manifest.permission.CAMERA
         )
+
         /*
-        val user = supabase.auth.currentUserOrNull()
-        val userid = user?.id
-        val uuid = UUID.fromString(userid)
-        GlobalVariables.USER_ID = uuid
+        if (GlobalVariables.USER_ID == null) {
+            val user = supabase.auth.currentUserOrNull()
+            val userid = user?.id
+            println(userid)
+            val uuid = UUID.fromString(userid)
+            GlobalVariables.USER_ID = uuid
+        }
 
          */
 

@@ -30,9 +30,12 @@ class LoginActivity :AppCompatActivity(){
         password = findViewById(R.id.password)
         loginButton = findViewById(R.id.loginButton)
 
+
         if (isLoggedIn()) {
             redirectToHome()
+            println("if is logged in method called")
         }
+
 
 
         loginButton.setOnClickListener(View.OnClickListener {
@@ -79,7 +82,8 @@ class LoginActivity :AppCompatActivity(){
      */
     fun isLoggedIn(): Boolean {
         val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
-        return prefs.getBoolean(GlobalVariables.KEY_IS_LOGGED_IN, false)
+        //return prefs.getBoolean(GlobalVariables.KEY_IS_LOGGED_IN, false)
+        return false
     }
 
 
@@ -89,6 +93,7 @@ class LoginActivity :AppCompatActivity(){
     private fun redirectToHome() {
         val intent = Intent(this@LoginActivity, DiscActivity::class.java)
         startActivity(intent)
+        println("redirectToHome method called")
         finish() // Finish the current activity to prevent going back to login screen
 
     }

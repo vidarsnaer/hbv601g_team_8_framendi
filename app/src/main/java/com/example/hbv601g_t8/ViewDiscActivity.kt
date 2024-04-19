@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import com.example.hbv601g_t8.SupabaseManager.supabase
+import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
 import io.ktor.util.Identity.decode
@@ -25,6 +27,7 @@ class ViewDiscActivity: AppCompatActivity() {
 
     private var discid by Delegates.notNull<Int>()
     private lateinit var discOwnerId: String
+    private lateinit var discOwnerUUID: UUID
     private lateinit var title : TextView
     private lateinit var price : TextView
     private lateinit var condition : TextView
@@ -39,12 +42,7 @@ class ViewDiscActivity: AppCompatActivity() {
     private lateinit var discInfo : Disc
     private lateinit var editDiscInfo: Button
     private lateinit var favouriteMark: List<FavoriteActivity.FavoriteMark>
-
-
-    //TODO: nota rétt userId
     private lateinit var currentUserId : UUID
-    private var ownerId : Long = (-1).toLong()
-    private var conversationTitle : String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?)  {
@@ -57,8 +55,10 @@ class ViewDiscActivity: AppCompatActivity() {
             discOwnerId = bundle.getString("discOwnerId").toString()
         }
 
+        discOwnerUUID = UUID.fromString(discOwnerId)
+
         val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
-        currentUserId = GlobalVariables.USER_ID
+        currentUserId = GlobalVariables.USER_ID!!
 
         suspend fun selectDiscInfoFromDatabase() {
             withContext(Dispatchers.IO) {
@@ -94,6 +94,7 @@ class ViewDiscActivity: AppCompatActivity() {
         image = findViewById(R.id.image)
         image.setImageResource(R.drawable.frisbee)
 
+        /*
         nextImage = findViewById(R.id.next_image)
         prevImage = findViewById(R.id.previous_image)
 
@@ -105,22 +106,25 @@ class ViewDiscActivity: AppCompatActivity() {
             Toast.makeText(this, "Previous image", Toast.LENGTH_SHORT).show()
         }
 
+         */
+
         messageOwner = findViewById(R.id.message_owner)
         messageOwner.setOnClickListener {
 
-            val newConversation = newConversationCreation (
-                currentUserId.toString(),
+            val newConversation = newConversationCreation(
+                currentUserId,
                 false,
-                discOwnerId,
-                "New Conversation Test"
+                discOwnerUUID,
+                discInfo.name
             )
-            val result : Conversation
+            val result: Conversation
 
             runBlocking {
                 withContext(Dispatchers.IO) {
-                    result = SupabaseManager.supabase.from("conversation").insert(newConversation) {
-                        select()
-                    }.decodeSingle()
+                    result =
+                        SupabaseManager.supabase.from("conversation").insert(newConversation) {
+                            select()
+                        }.decodeSingle()
                 }
             }
 
@@ -129,6 +133,10 @@ class ViewDiscActivity: AppCompatActivity() {
             }
             startActivity(intent)
             //Toast.makeText(this, "Message owner", Toast.LENGTH_SHORT).show()
+        }
+
+        if (currentUserId == discOwnerUUID) {
+            messageOwner.visibility = View.GONE
         }
 
         var favorited = favouriteMark.any {mark -> mark.disc_discid == discid }
@@ -141,7 +149,7 @@ class ViewDiscActivity: AppCompatActivity() {
 
         favorites.setOnClickListener{
             if(!favorited){
-                val addToFavourite = FavoriteActivity.AddFavoriteMark(discid, currentUserId.toString())
+                val addToFavourite = FavoriteActivity.AddFavoriteMark(discid, currentUserId)
                 favorites.setBackgroundResource(R.drawable.baseline_favorite_24)
                 Toast.makeText(this, "Added to favorites", Toast.LENGTH_SHORT).show()
                 runBlocking {

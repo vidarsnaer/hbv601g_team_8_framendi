@@ -158,7 +158,7 @@ class NewDiscActivity : AppCompatActivity() {
                 title,
                 type,
                 color,
-                GlobalVariables.USER_ID,
+                GlobalVariables.USER_ID!!,
                 GlobalVariables.USER_LATITUDE,
                 GlobalVariables.USER_LONGITUDE
             )

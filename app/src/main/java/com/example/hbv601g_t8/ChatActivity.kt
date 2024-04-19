@@ -20,12 +20,12 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var sendButton: MaterialButton
     private lateinit var messageInput: TextInputEditText
     private lateinit var chatMessages : List<Message>
-    private lateinit var newMessage: Message
+    private lateinit var newMessage: NewMessage
     private lateinit var callButton: MaterialButton
     private lateinit var agoraManager: AgoraManager
 
     private var chatId : Int = 0
-    private val currentUserId = 9
+    private val currentUserId = GlobalVariables.USER_ID!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +61,7 @@ class ChatActivity : AppCompatActivity() {
             val messageText = messageInput.text.toString()
 
             if (messageText.isNotEmpty()) {
-                newMessage = Message(chatId, messageText, false, currentUserId, ZonedDateTime.now().toString())
+                newMessage = NewMessage(chatId, messageText, false, currentUserId, ZonedDateTime.now().toString())
 
                 runBlocking {
                     sendMessageToDatabase()

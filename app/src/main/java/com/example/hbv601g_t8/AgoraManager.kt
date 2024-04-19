@@ -19,7 +19,7 @@ open class AgoraManager(context: Context){
     protected val appId: String = "5165382fd1ac41a1a5519fd3fb902a4d" // Your App ID from Agora console
     var channelName: String = "testing" // The name of the channel to join
     var localUid: Int = 0 // UID of the local user
-    var remoteUids = HashSet<Int>() // An object to store uids of remote users
+    var remoteUids = HashSet<Int>() // An object to store uuids of remote users
     var isJoined = false // Status of the video call
         private set
     var isBroadcaster = true // Local user role
@@ -122,6 +122,9 @@ open class AgoraManager(context: Context){
 
         // Join the channel using a token.
         agoraEngine!!.joinChannel(token, channelName, localUid, options)
+
+        isJoined = true
+
         return 0
     }
 

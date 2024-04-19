@@ -41,10 +41,10 @@ class DiscAdapter(private var discList: List<Disc>, private var discImages: Map<
 
         holder.itemView.setOnClickListener {
             val discid: Int = discList[position].discid
-            val discOwnerId: String = discList[position].user_id.toString()
+            val discOwnerId: UUID = discList[position].user_id
             val intent = Intent(context, ViewDiscActivity::class.java)
             intent.putExtra("discid", discid)
-            intent.putExtra("discOwnerId", discOwnerId)
+            intent.putExtra("discOwnerId", discOwnerId.toString())
             context.startActivity(intent)
         }
     }

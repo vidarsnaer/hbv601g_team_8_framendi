@@ -18,6 +18,7 @@ import kotlinx.serialization.Serializable
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.UUID
 
 class FavoriteActivity : AppCompatActivity() {
 
@@ -25,20 +26,22 @@ class FavoriteActivity : AppCompatActivity() {
     private lateinit var allDiscsList: List<Disc>
     private lateinit var favoriteMark: List<FavoriteMark>
     private lateinit var favoriteDiscs: List<Disc>
-    private lateinit var currentUserId : String
+    private lateinit var currentUserId : UUID
     private lateinit var discImages: MutableMap<Int, Bitmap>
 
     @Serializable
     data class FavoriteMark(
         val id : Int,
         val disc_discid : Int,
-        val user_id : String
+        @Serializable(with = UUIDSerializer::class)
+        val user_id : UUID
     )
 
     @Serializable
     data class AddFavoriteMark(
         val disc_discid : Int,
-        val user_id : String
+        @Serializable(with = UUIDSerializer::class)
+        val user_id : UUID
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +49,7 @@ class FavoriteActivity : AppCompatActivity() {
         setContentView(R.layout.favorites)
 
         val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
-        currentUserId = prefs.getString(GlobalVariables.USER_ID.toString(), "No id found").toString()
+        currentUserId = GlobalVariables.USER_ID!!
 
         discImages = mutableMapOf<Int, Bitmap>()
 
