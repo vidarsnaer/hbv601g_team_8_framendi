@@ -151,7 +151,7 @@ class DiscListFragment : Fragment() {
                     GlobalVariables.USER_LATITUDE = userLatitude
                 }
                 if (userLongitude != null) {
-                    GlobalVariables.USER_LATITUDE = userLongitude
+                    GlobalVariables.USER_LONGITUDE = userLongitude
                 }
                 updateSliderMaxDistance()
             } else -> {

@@ -39,6 +39,7 @@ import io.github.jan.supabase.gotrue.providers.builtin.Email
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class DiscActivity : AppCompatActivity(), FilterListener {
 
@@ -56,6 +57,14 @@ class DiscActivity : AppCompatActivity(), FilterListener {
         val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
         val id =  prefs.getString(GlobalVariables.USER_ID, "No id found")
         Toast.makeText(this, id, Toast.LENGTH_SHORT).show()
+         */
+
+        /*
+        val user = supabase.auth.currentUserOrNull()
+        val userid = user?.id
+        val uuid = UUID.fromString(userid)
+        GlobalVariables.USER_ID = uuid
+
          */
 
         binding = ActivityMainBinding.inflate(layoutInflater)

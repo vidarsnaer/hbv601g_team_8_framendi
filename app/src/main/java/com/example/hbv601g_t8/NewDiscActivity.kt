@@ -168,6 +168,10 @@ class NewDiscActivity : AppCompatActivity() {
             }
 
             Toast.makeText(this, "Disc successfully added", Toast.LENGTH_LONG).show()
+
+            val intent = Intent(this@NewDiscActivity, DiscActivity::class.java)
+            startActivity(intent)
+
         }
     }
 
