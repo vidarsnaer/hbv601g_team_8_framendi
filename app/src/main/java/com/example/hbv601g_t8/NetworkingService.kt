@@ -4,6 +4,7 @@ import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
@@ -12,37 +13,37 @@ import retrofit2.http.Query
 
 interface NetworkingService {
 
-    @GET("/api/chat")
+    @GET("/api/chat/conversation/all")
     fun getAllConversations(): Call<List<Conversation>>
 
-    @GET("/api/chat/{id}")
+    @GET("/api/chat/conversation/{id}")
     fun getConversation(@Path("id") conversationId: Long): Call<Conversation>
 
-    @POST("/api/chat/end/{id}")
+    @POST("/api/chat/conversation/end/{id}")
     fun endConversation(@Path("id") conversationId: Long): Call<String>
 
-    @POST("/api/chat/send/{id}")
+    @POST("/api/chat/messages/send/{id}")
     fun sendMessage(@Path("id") conversationId: Long, @Query("message") messageText: String): Call<String>
 
-    @POST("/api/chat/create/{sellerId}/{title}")
+    @POST("/api/chat/conversation/create/{sellerId}/{title}")
     fun createConversation(@Path("sellerId") sellerId: Long, @Path("title") title: String): Call<Conversation>
 
-    @POST("/api/chat/customer-service")
+    @POST("/api/chat/conversation/customerservice")
     fun startConversationWithCustomerService(): Call<Conversation>
 
-    @GET("/messages/{conversationId}")
+    @GET("/api/chat/messages/{conversationId}")
     fun getMessages(@Path("conversationId") conversationId: Long): Call<List<Message>>
 
 
     //
 
-    @POST("/api/account/changename")
+    @POST("/api/account/changeName")
     fun changeUserName(@Query("name") newName: String): Call<String>
 
-    @POST("/api/account/changeemail")
+    @POST("/api/account/changeEmail")
     fun changeUserEmail(@Query("old-email") oldEmail: String, @Query("new-email") newEmail: String): Call<String>
 
-    @POST("/api/account/changepass")
+    @POST("/api/account/changePass")
     fun changeUserPassword(@Query("old-pass") oldPass: String, @Query("new-pass") newPass: String, @Query("confirm-pass") confirmPass: String): Call<String>
 
     @POST("/api/account/delete")
@@ -50,10 +51,10 @@ interface NetworkingService {
 
     //
 
-    @POST("/api/users/login")
-    fun loginUser(@Body user: User): Call<String>
+    @POST("/api/user/login")
+    fun loginUser(@Header("userName") userName: String, @Header("userPassword") userPassword: String): Call<String>
 
-    @POST("/api/users/signup")
+    @POST("/api/user/signup")
     fun signupUser(@Body user: User): Call<User>
 
     //
@@ -61,13 +62,13 @@ interface NetworkingService {
     @GET("/api/disc/all")
     fun getAllDiscs(): Call<List<Disc>>
 
-    @GET("/mydiscs/{userId}")
+    @GET("/api/disc/listings/{userId}")
     fun getMyDiscs(@Path ("userId") userId: Long): Call<List<Disc>>
 
-    @GET("/api/disc/home/favorites")
+    @GET("/api/disc/favorite/all")
     fun getFavoriteDiscs(): Call<List<Disc>>
 
-    @POST("/api/disc/addDisc")
+    @POST("/api/disc/add")
     @Multipart
     fun addDisc(@Part("disc") disc: Disc): Call<Disc>
 
@@ -75,22 +76,22 @@ interface NetworkingService {
     @Multipart
     fun updateDisc(@Path("id") id: Long, @Part("disc") disc: Disc): Call<String>
 
-    @DELETE("/api/disc/{id}")
+    @DELETE("/api/disc/delete/{id}")
     fun deleteDisc(@Path("id") id: Long): Call<String>
 
     @GET("/api/disc/{id}")
     fun getDisc(@Path("id") id: Long): Call<Disc>
 
-    @DELETE("/api/disc/{id}/images/{imageId}")
-    fun deleteImage(@Path("id") discId: Long, @Path("imageId") imageId: Long): Call<String>
+    @DELETE("/api/disc/images/delete/{discId}/{imageId}")
+    fun deleteImage(@Path("discId") discId: Long, @Path("imageId") imageId: Long): Call<String>
 
-    @POST("/api/disc/favorites/{discId}")
+    @POST("/api/disc/favorite/{discId}")
     fun addToFavorites(@Path("discId") discId: Long): Call<String>
 
-    @DELETE("/api/disc/favorite/{discId}")
+    @DELETE("/api/disc/delete/favorite/{discId}")
     fun removeFromFavorites(@Path("discId") discId: Long): Call<String>
 
-    @GET("/api/disc/isFavorite/{discId}")
+    @GET("/api/disc/isfavorite/{discId}")
     fun isDiscFavorite(@Path("discId") discId: Long): Call<Boolean>
 
     @GET("/api/disc/filter")

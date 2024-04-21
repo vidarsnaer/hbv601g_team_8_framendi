@@ -16,11 +16,13 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hbv601g_t8.SupabaseManager.supabase
 import com.example.hbv601g_t8.databinding.DiscListFragmentBinding
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -125,7 +127,7 @@ class DiscListFragment : Fragment() {
             }
         }
 
-        runBlocking {
+        lifecycleScope.launch {
             selectAllDiscsFromDatabase()
             getImages()
         }
@@ -257,13 +259,27 @@ class DiscListFragment : Fragment() {
     }
 
     private suspend fun selectAllDiscsFromDatabase() {
-        newDiscList = DiscService().getAllDiscs()!!
-        /*
-        withContext(Dispatchers.IO) {
-            newDiscList = supabase.from("discs").select().decodeList<Disc>()
+        try {
+            val discs = DiscService().getAllDiscs() ?: emptyList()  // Use Elvis operator for null safety
+            if (discs.isEmpty()) {
+                Log.d("DiscListFragment", "No discs found")
+                // Update the UI to reflect no discs available
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "No discs available", Toast.LENGTH_LONG).show()
+                    // Possibly hide RecyclerView here if it's empty
+                }
+            } else {
+                newDiscList = discs
+                // Make sure to update the UI on the main thread if needed
+                withContext(Dispatchers.Main) {
+                    discAdapter.updateData(newDiscList, discImages)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("DiscListFragment", "Error fetching discs", e)
         }
-         */
     }
+
 
     fun filterAndRefreshView() {
         println("refreshView Called")
@@ -272,23 +288,6 @@ class DiscListFragment : Fragment() {
 
         runBlocking {
             filteredDiscList = DiscService().filterDiscs(fromPrice = filterMinPrice.toInt(), toPrice = filterMaxPrice.toInt(), type = filterType, condition = filterState, colour = null, name = null)!!
-            /*
-            withContext(Dispatchers.IO) {
-                filteredDiscList = supabase.from("discs").select {
-                    filter {
-                        if (filterState != "Any")  {
-                            eq("condition", filterState)
-                        }
-                        if (filterType != "Any") {
-                            eq("type", filterType)
-                        }
-                        and {
-                            gte("price", filterMinPrice)
-                            lte("price", filterMaxPrice)
-                        }
-                    }
-                }.decodeList<Disc>()
-            } */
         }
 
         if (filteredDiscList.isNotEmpty()) {

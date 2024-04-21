@@ -53,7 +53,7 @@ class ViewDiscActivity: AppCompatActivity() {
 
         val bundle = intent.extras
         if (bundle != null) {
-            discid = bundle.getLong("discid")
+            discid = bundle.getLong("discId")
             discOwnerId = bundle.getLong("discOwnerId")
         }
 

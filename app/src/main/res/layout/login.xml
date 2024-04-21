@@ -38,13 +38,13 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:id="@+id/email"
+            android:id="@+id/username"
             android:background="@drawable/custom_login"
             android:layout_marginTop="40dp"
             android:padding="8dp"
-            android:hint="@string/email"
+            android:hint="@string/username"
             android:textColor="@color/black"
-            android:inputType="textEmailAddress"
+            android:inputType="textPersonName"
             android:drawableLeft="@drawable/baseline_account_circle_24"
             android:drawablePadding="8dp" />
 

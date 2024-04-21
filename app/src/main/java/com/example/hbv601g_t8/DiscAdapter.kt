@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import java.util.UUID
 
 
 class DiscAdapter(private var discList: List<Disc>, private var discImages: Map<Int, Bitmap>):
@@ -29,7 +28,7 @@ class DiscAdapter(private var discList: List<Disc>, private var discImages: Map<
 
     override fun onBindViewHolder(holder: DiscViewHolder, position: Int) {
         val currentItem = discList[position]
-        val currentImage = discImages[currentItem.discid] // Get the corresponding image for the current disc id
+        val currentImage = discImages[currentItem.discId?.toInt()] // Get the corresponding image for the current disc id
         holder.title.text = currentItem.name
         holder.price.text = context.getString(R.string.kr, currentItem.price.toString())
 
@@ -40,10 +39,10 @@ class DiscAdapter(private var discList: List<Disc>, private var discImages: Map<
         }
 
         holder.itemView.setOnClickListener {
-            val discid: Int = discList[position].discid
-            val discOwnerId: String = discList[position].user_id
+            val discId: Long = discList[position].discId!!
+            val discOwnerId: Long = discList[position].userId
             val intent = Intent(context, ViewDiscActivity::class.java)
-            intent.putExtra("discid", discid)
+            intent.putExtra("discId", discId)
             intent.putExtra("discOwnerId", discOwnerId)
             context.startActivity(intent)
         }
