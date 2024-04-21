@@ -4,12 +4,10 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -22,7 +20,7 @@ import java.util.UUID
 class MyDiscsActivity : AppCompatActivity() {
     private lateinit var myDiscsList: List<Disc>
     private lateinit var recyclerView: RecyclerView
-    private lateinit var currentUserId : UUID
+    private var currentUserId : Long = -1
     private lateinit var discImages: MutableMap<Int, Bitmap>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,8 +32,7 @@ class MyDiscsActivity : AppCompatActivity() {
 
         myDiscsList = emptyList()
 
-        val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
-        currentUserId = GlobalVariables.USER_ID!!
+        currentUserId = getCurrentUserId()
 
         discImages = mutableMapOf<Int, Bitmap>()
 
@@ -55,10 +52,14 @@ class MyDiscsActivity : AppCompatActivity() {
 
         suspend fun getImages(){
             for (disc in myDiscsList) {
-                val imageUrl = SupabaseManager.supabase.storage.from("Images").publicUrl("${disc.discid}/image")
-                val bitmap = loadImageFromUrl(imageUrl)
-                bitmap?.let {
-                    discImages[disc.discid] = it
+                if(disc.discId != null) {
+                    val intDiscId = disc.discId.toInt()
+                    val imageUrl = SupabaseManager.supabase.storage.from("Images")
+                        .publicUrl("${intDiscId}/image")
+                    val bitmap = loadImageFromUrl(imageUrl)
+                    bitmap?.let {
+                        discImages[intDiscId] = it
+                    }
                 }
             }
         }
@@ -75,12 +76,11 @@ class MyDiscsActivity : AppCompatActivity() {
     }
 
     private suspend fun selectMyDiscsFromDatabase () {
-        withContext(Dispatchers.IO) {
-            myDiscsList = SupabaseManager.supabase.from("discs").select {
-                filter {
-                    eq("user_id", currentUserId)
-                }
-            }.decodeList<Disc>()
-        }
+        DiscService().getMyDiscs(currentUserId)
+    }
+
+    private fun getCurrentUserId(): Long {
+        val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        return sharedPreferences.getLong(GlobalVariables.USER_ID, -1)  // Return -1 or another invalid value as default if not found
     }
 }

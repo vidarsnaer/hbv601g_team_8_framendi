@@ -2,15 +2,13 @@ package com.example.hbv601g_t8
 
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.Auth
-import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.storage.Storage
-import io.grpc.Context
 
 object SupabaseManager {
     val supabase = createSupabaseClient(
-        supabaseUrl = "https://qcrqjzyoctyvhukzbodn.supabase.co",
-        supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFjcnFqenlvY3R5dmh1a3pib2RuIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTUwNDY5NTAsImV4cCI6MjAxMDYyMjk1MH0.nEQyU_7tzhOG9yUYe4zoYEOHX2llX3eFuM4mFdML3Gc"
+        supabaseUrl = "https://qxrmgqycgryhswziouye.supabase.co",
+        supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF4cm1ncXljZ3J5aHN3emlvdXllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM0NDYzMTcsImV4cCI6MjAyOTAyMjMxN30.UN7kvW-gtCpp-hpgeta7EeIx8gLvPJj_qTgj7iIGvHc"
     ) {
         install(Postgrest)
         install(Auth)

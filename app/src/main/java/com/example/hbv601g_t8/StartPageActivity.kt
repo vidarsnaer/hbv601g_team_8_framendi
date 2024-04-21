@@ -4,14 +4,8 @@ package com.example.hbv601g_t8
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.view.View
 import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.ViewUtils
-import com.example.hbv601g_t8.databinding.ActivityMainBinding
 
 class StartPageActivity:AppCompatActivity(){
 
@@ -22,10 +16,11 @@ class StartPageActivity:AppCompatActivity(){
         super.onCreate(savedInstanceState)
 
 
-        /*val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.clear()
-        editor.apply()*/
+        editor.apply()
+
 
         if (isLoggedIn()) {
             redirectToHome()
@@ -54,8 +49,9 @@ class StartPageActivity:AppCompatActivity(){
      */
     private fun isLoggedIn(): Boolean {
         val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
-        //return prefs.getBoolean(GlobalVariables.KEY_IS_LOGGED_IN, false)
-        return false
+        val loggedIn = prefs.getBoolean(GlobalVariables.KEY_IS_LOGGED_IN, false)
+        print("Is logged in: $loggedIn")
+        return loggedIn
     }
 
     /**

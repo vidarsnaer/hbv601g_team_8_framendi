@@ -1,21 +1,19 @@
 package com.example.hbv601g_t8
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
-import androidx.activity.contextaware.withContextAvailable
 import androidx.appcompat.app.AppCompatActivity
-import io.github.jan.supabase.postgrest.from
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlin.random.Random
 
 class EditDiscActivity : AppCompatActivity() {
 
-    private var discId : Int = 0
+    private var discId : Long = 0
     private lateinit var updatedDiscTitle : String
     private lateinit var updatedDiscColor : String
     private var updatedDiscPrice : Int = 0
@@ -31,7 +29,7 @@ class EditDiscActivity : AppCompatActivity() {
 
         val bundle = intent.extras
         if (bundle != null) {
-            discId = bundle.getInt("discId")
+            discId = bundle.getLong("discId")
         }
 
         println(discId)
@@ -72,16 +70,16 @@ class EditDiscActivity : AppCompatActivity() {
             updatedDiscDescription = findViewById<EditText>(R.id.newDiscDescription).text.toString()
 
             updatedDisc = Disc(
-                currentDisc.discid,
-                updatedDiscCondition,
-                updatedDiscDescription,
-                updatedDiscTitle,
-                updatedDiscPrice,
-                updatedDiscType,
-                currentDisc.user_id,
-                updatedDiscColor,
-                1.0,
-                1.0
+                discId = currentDisc.discId,
+                condition = updatedDiscCondition,
+                description = updatedDiscDescription,
+                name = updatedDiscTitle,
+                price = updatedDiscPrice,
+                type = updatedDiscType,
+                userId = currentDisc.userId,
+                colour = updatedDiscColor,
+                latitude = Random.nextDouble(64.00, 66.00),
+                longitude = Random.nextDouble(-22.00, -14.00)
             )
 
             Toast.makeText(this, "Disc Info Updated", Toast.LENGTH_SHORT).show()
@@ -95,6 +93,8 @@ class EditDiscActivity : AppCompatActivity() {
     }
 
     private suspend fun selectCurrentDiscFromDatabase () {
+        currentDisc = DiscService().getDisc(discId)!!
+        /*
         withContext(Dispatchers.IO) {
             currentDisc = SupabaseManager.supabase.from("discs").select {
                 filter {
@@ -102,9 +102,12 @@ class EditDiscActivity : AppCompatActivity() {
                 }
             }.decodeSingle()
         }
+         */
     }
 
     private suspend fun updateCurrentDiscToDatabase () {
+        DiscService().updateDisc(discId, updatedDisc)
+        /*
         withContext(Dispatchers.IO) {
             SupabaseManager.supabase.from("discs").update (updatedDisc) {
                 filter {
@@ -112,7 +115,13 @@ class EditDiscActivity : AppCompatActivity() {
                 }
             }
         }
+         */
         println(updatedDisc)
+    }
+
+    private fun getCurrentUserId(): Long {
+        val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        return sharedPreferences.getLong(GlobalVariables.USER_ID, -1)  // Return -1 or another invalid value as default if not found
     }
 
 }

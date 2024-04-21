@@ -12,22 +12,23 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.hbv601g_t8.databinding.DiscListFragmentBinding
-import kotlin.math.ceil
-import android.widget.Toast
 import com.example.hbv601g_t8.SupabaseManager.supabase
-import io.github.jan.supabase.postgrest.from
+import com.example.hbv601g_t8.databinding.DiscListFragmentBinding
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import kotlin.math.ceil
 
 
  interface FilterListener {
@@ -115,15 +116,18 @@ class DiscListFragment : Fragment() {
 
         suspend fun getImages(){
             for (disc in newDiscList) {
-                val imageUrl = supabase.storage.from("Images").publicUrl("${disc.discid}/image")
-                val bitmap = loadImageFromUrl(imageUrl)
-                bitmap?.let {
-                    discImages[disc.discid] = it
+                if(disc.discId != null) {
+                    val intDiscId = disc.discId.toInt()
+                    val imageUrl = supabase.storage.from("Images").publicUrl("${intDiscId}/image")
+                    val bitmap = loadImageFromUrl(imageUrl)
+                    bitmap?.let {
+                        discImages[intDiscId] = it
+                    }
                 }
             }
         }
 
-        runBlocking {
+        lifecycleScope.launch {
             selectAllDiscsFromDatabase()
             getImages()
         }
@@ -152,7 +156,7 @@ class DiscListFragment : Fragment() {
                 fetchUserLocationOnce()  // Fetch the location once permission is confirmed
             }
             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                // Show UI to explain why the permission is needed
+                // TODO: Show UI to explain why the permission is needed?
                 showInContextUI()
             }
             else -> {
@@ -187,7 +191,8 @@ class DiscListFragment : Fragment() {
                 }
                 updateSliderMaxDistance()
             } else -> {
-            // Consider handling the case where location is null
+                // TODO: Consider handling the case where location is null?
+                // Remove radius filter/slider?
             }
         }
 
@@ -211,10 +216,10 @@ class DiscListFragment : Fragment() {
                 valueFrom = 10f  // Minimum filtering distance is 10 km
                 valueTo = safeMaxDistance  // Maximum distance based on the farthest disc
                 stepSize = 10f  // Step size of 10 km
-                value = valueTo  // Start with the slider at "All"
+                value = valueTo  // Start with the slider at all discs
             }
 
-            updateSliderText(10000000f)  // Show "All" initially
+            updateSliderText(10000000f)  // Show all discs initially
         }
 
     }
@@ -222,9 +227,9 @@ class DiscListFragment : Fragment() {
 
     private fun updateSliderText(distance: Float) {
         binding.radiusText.text = if (distance >= binding.radiusSlider.valueTo) {
-            "All"
+            getString(R.string.radius_all)
         } else {
-            "${distance.toInt()} km"
+            "Showing available discs within ${distance.toInt()} km from your location."
         }
     }
 
@@ -262,10 +267,27 @@ class DiscListFragment : Fragment() {
     }
 
     private suspend fun selectAllDiscsFromDatabase() {
-        withContext(Dispatchers.IO) {
-            newDiscList = supabase.from("discs").select().decodeList<Disc>()
+        try {
+            val discs = DiscService().getAllDiscs() ?: emptyList()  // Use Elvis operator for null safety
+            if (discs.isEmpty()) {
+                Log.d("DiscListFragment", "No discs found")
+                // Update the UI to reflect no discs available
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "No discs available", Toast.LENGTH_LONG).show()
+                    // Possibly hide RecyclerView here if it's empty
+                }
+            } else {
+                newDiscList = discs
+                // Make sure to update the UI on the main thread if needed
+                withContext(Dispatchers.Main) {
+                    discAdapter.updateData(newDiscList, discImages)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("DiscListFragment", "Error fetching discs", e)
         }
     }
+
 
     fun filterAndRefreshView() {
         println("refreshView Called")
@@ -273,22 +295,7 @@ class DiscListFragment : Fragment() {
         filteredDiscList = emptyList()
 
         runBlocking {
-            withContext(Dispatchers.IO) {
-                filteredDiscList = supabase.from("discs").select {
-                    filter {
-                        if (filterState != "Any")  {
-                            eq("condition", filterState)
-                        }
-                        if (filterType != "Any") {
-                            eq("type", filterType)
-                        }
-                        and {
-                            gte("price", filterMinPrice)
-                            lte("price", filterMaxPrice)
-                        }
-                    }
-                }.decodeList<Disc>()
-            }
+            filteredDiscList = DiscService().filterDiscs(fromPrice = filterMinPrice.toInt(), toPrice = filterMaxPrice.toInt(), type = filterType, condition = filterState, colour = null, name = null)!!
         }
 
         if (filteredDiscList.isNotEmpty()) {

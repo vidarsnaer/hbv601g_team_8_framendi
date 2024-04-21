@@ -5,24 +5,11 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.icu.text.SimpleDateFormat
-import android.os.Build
 import android.os.Bundle
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.view.LayoutInflater
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import com.example.hbv601g_t8.databinding.ActivityMainBinding
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.recyclerview.widget.LinearLayoutManager
-import java.util.Date
-import java.util.Locale
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -31,15 +18,21 @@ import android.widget.EditText
 import android.widget.PopupWindow
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.NavHostFragment
-import androidx.recyclerview.widget.RecyclerView
-import com.example.hbv601g_t8.SupabaseManager.supabase
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
+import com.example.hbv601g_t8.GlobalVariables.CUSTOMER_SERVICE_ID
+import com.example.hbv601g_t8.databinding.ActivityMainBinding
 import com.google.android.material.button.MaterialButton
 import io.agora.rtc2.IRtcEngineEventHandler
 import io.github.jan.supabase.gotrue.auth
-import io.github.jan.supabase.gotrue.providers.builtin.Email
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.util.UUID
@@ -53,14 +46,17 @@ class DiscActivity : AppCompatActivity(), FilterListener {
     private lateinit var applyFiltersButton: Button
     private lateinit var clearFilterButton: MaterialButton
 
+    private var currentUserId: Long = -1
+
+    private lateinit var conversationService: ConversationService
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        /* Get the id from sharedPrefrences
+        conversationService = ConversationService()
+
         val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
-        val id =  prefs.getString(GlobalVariables.USER_ID, "No id found")
-        Toast.makeText(this, id, Toast.LENGTH_SHORT).show()
-         */
+        currentUserId = getCurrentUserId()
 
         val REQUESTED_PERMISSIONS = arrayOf(
             Manifest.permission.RECORD_AUDIO,
@@ -170,14 +166,9 @@ class DiscActivity : AppCompatActivity(), FilterListener {
 
         }
 
-        //binding.fab.setOnClickListener { view ->
-        //    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-        //        .setAction("Action", null).show()
-        //}
-
         binding.fab.setOnClickListener {
             val intent = Intent(this@DiscActivity, ChatOverviewActivity::class.java)
-                //.apply {putExtra("USER_ID", currentUserId) }
+
             startActivity(intent)
 
             Notification.showNotification(
@@ -248,6 +239,10 @@ class DiscActivity : AppCompatActivity(), FilterListener {
                 startActivity(Intent(this, MyDiscsActivity::class.java))
                 true
             }
+            R.id.nav_contact_service -> {
+                    showContactServicePopup()
+                    return true
+            }
             else -> super.onOptionsItemSelected(item)
         }
 
@@ -282,4 +277,78 @@ class DiscActivity : AppCompatActivity(), FilterListener {
             println("Fragment not found")
         }*/
     }
+
+
+    private fun showContactServicePopup() {
+        val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val popupView = inflater.inflate(R.layout.popup_contact_service, null)
+        val popupWindow = PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+
+        popupWindow.isFocusable = true
+        popupWindow.update()
+        popupWindow.showAtLocation(binding.root, Gravity.CENTER, 0, 0)
+
+        val etSubject = popupView.findViewById<EditText>(R.id.etSubject)
+        val etMessage = popupView.findViewById<EditText>(R.id.etMessage)
+        val btnSend = popupView.findViewById<Button>(R.id.btnSend)
+        val btnCancel = popupView.findViewById<Button>(R.id.btnCancel)
+
+        btnCancel.setOnClickListener { popupWindow.dismiss() }
+        btnSend.setOnClickListener {
+            val subjectText = etSubject.text.toString()
+            val messageText = etMessage.text.toString()
+            if (messageText.isNotEmpty() and subjectText.isNotEmpty()) {
+                sendMessageToCustomerService(subjectText, messageText)
+                popupWindow.dismiss()
+            } else if (messageText.isEmpty()) {
+                Toast.makeText(this, "Message cannot be empty", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Subject cannot be empty", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
+
+
+
+    private fun sendMessageToCustomerService(messageSubject: String, initialMessage: String) {
+        lifecycleScope.launch {
+            val conversationId = createNewConversationWithCustomerService(messageSubject)
+            if (conversationId != (-1).toLong()) {
+                sendMessageToConversation(conversationId, initialMessage)
+                redirectToChat(conversationId)
+            } else {
+                Toast.makeText(this@DiscActivity, "Unable to start conversation with customer service.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
+    private fun createNewConversationWithCustomerService(conversationSubject: String): Long {
+        val result : Conversation
+        runBlocking {
+            result = conversationService.createConversation(sellerId = CUSTOMER_SERVICE_ID, title = "Customer service: ${conversationSubject}")!!
+        }
+        return result.conversationID!!
+    }
+
+    private suspend fun sendMessageToConversation(conversationId: Long, message: String) {
+        //val timestamp = ZonedDateTime.now().toString()
+        //var newMessage = Message(conversationID = conversationId, senderID = currentUserId, message = message, sentAt = timestamp, read = false)
+        conversationService.sendMessage(conversationId = conversationId, messageText = message)
+    }
+
+    private fun redirectToChat(conversationId: Long) {
+        val intent = Intent(this, ChatActivity::class.java).apply {
+            putExtra("CHAT_ID", conversationId)
+        }
+        startActivity(intent)
+    }
+
+    private fun getCurrentUserId(): Long {
+        val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        return sharedPreferences.getLong(GlobalVariables.USER_ID, -1)  // Return -1 or another invalid value as default if not found
+    }
+
 }

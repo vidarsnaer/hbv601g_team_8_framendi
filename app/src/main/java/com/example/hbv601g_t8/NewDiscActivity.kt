@@ -2,6 +2,7 @@ package com.example.hbv601g_t8
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -19,6 +20,12 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import com.example.hbv601g_t8.SupabaseManager.supabase
+import io.github.jan.supabase.storage.storage
+import kotlinx.coroutines.runBlocking
+import java.io.ByteArrayOutputStream
+import java.io.File
+import kotlin.random.Random
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -42,10 +49,13 @@ class NewDiscActivity : AppCompatActivity() {
     private lateinit var priceText: EditText
     private lateinit var descriptionText: EditText
     private lateinit var quantityText: EditText
+    private var currentUserId : Long = -1
     private val FILE_NAME = "photo.jpg"
     private val IMAGE_CHOOSE = 1000
     private val PERMISSION_CODE = 1001
     private val REQUEST_CODE = 7
+    private var imageAdded = 0
+    private var discId: Long = -1
 
     /**
      * Called when the activity is first created.
@@ -59,6 +69,8 @@ class NewDiscActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.newdisc)
+
+        currentUserId = getCurrentUserId()
 
         buttonPhoto = findViewById(R.id.buttonPhoto)
         btnChoose = findViewById(R.id.btnChoose)
@@ -136,10 +148,9 @@ class NewDiscActivity : AppCompatActivity() {
             }
         }
 
-        suspend fun insertProductIntoSupabase(newDiscCreation: NewDiscCreation) {
-            withContext(Dispatchers.IO) {
-                SupabaseManager.supabase.from("discs").insert(newDiscCreation)
-            }
+        suspend fun insertProductIntoSupabase(newDisc: Disc) {
+            val result = DiscService().addDisc(newDisc)!!
+            discId = result.discId!!
         }
 
         submitNewDiscButton.setOnClickListener {
@@ -150,18 +161,10 @@ class NewDiscActivity : AppCompatActivity() {
             val quantity = quantityText.text.toString().toInt()
             val state = selectedState
             val type = selectedType
+            val latitude = Random.nextDouble(64.00, 66.00)
+            val longitude = Random.nextDouble(-22.00, -14.00)
 
-            val newDisc = NewDiscCreation(
-                price,
-                state,
-                description,
-                title,
-                type,
-                color,
-                GlobalVariables.USER_ID!!,
-                GlobalVariables.USER_LATITUDE,
-                GlobalVariables.USER_LONGITUDE
-            )
+            val newDisc = Disc(name = title, description = description, type = type, condition = state, colour = color, price = price, userId = currentUserId, latitude = latitude, longitude = longitude)
 
             runBlocking {
                 insertProductIntoSupabase(newDisc)
@@ -244,5 +247,10 @@ class NewDiscActivity : AppCompatActivity() {
             }
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
+    }
+
+    private fun getCurrentUserId(): Long {
+        val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        return sharedPreferences.getLong(GlobalVariables.USER_ID, -1)  // Return -1 or another invalid value as default if not found
     }
 }

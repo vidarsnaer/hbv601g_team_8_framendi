@@ -8,15 +8,17 @@ import com.example.hbv601g_t8.R
 import com.example.hbv601g_t8.databinding.ChatItemBinding
 import java.util.UUID
 
-class ChatAdapter(private val dataset: List<Message>, private val currentUserId: UUID) :
+
+class ChatAdapter(private val dataset: List<Message>, private val currentUserId: Long) :
     RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
 
     class ChatViewHolder(private val binding: ChatItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(message: Message, currentUserId: UUID) {
+        fun bind(message: Message, currentUserId: Long) {
+
             binding.messageText.text = message.message
             val layoutParams = binding.messageText.layoutParams as ConstraintLayout.LayoutParams
 
-            if (message.senderid == currentUserId) {
+            if (message.senderID == currentUserId) {
                 // Align to the right for the current user's messages
                 layoutParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
                 layoutParams.startToStart = ConstraintLayout.LayoutParams.UNSET

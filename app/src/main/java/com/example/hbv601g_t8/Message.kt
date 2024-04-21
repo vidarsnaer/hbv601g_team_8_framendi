@@ -5,21 +5,11 @@ import java.util.UUID
 
 @Serializable
 data class Message(
-    val message_id: Int,
-    val conversationid: Int,
+    val messageID: Long? = null,
+    val conversationID: Long,
+    val senderID: Long,
     val message: String,
-    val read: Boolean,
-    @Serializable(with = UUIDSerializer::class)
-    val senderid: UUID,
-    val sent_at: String
+    val sentAt: String,  // TODO: Make sure the date format matches between frontend and backend
+    val read: Boolean
 )
 
-@Serializable
-data class NewMessage(
-    val conversationid: Int,
-    val message: String,
-    val read: Boolean,
-    @Serializable(with = UUIDSerializer::class)
-    val senderid: UUID,
-    val sent_at: String
-)

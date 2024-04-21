@@ -2,6 +2,8 @@ package com.example.hbv601g_t8
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -9,6 +11,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.hbv601g_t8.SupabaseManager.supabase
+import io.github.jan.supabase.storage.storage
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
@@ -20,14 +24,15 @@ import io.ktor.util.Identity.decode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import java.util.UUID
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
 import kotlin.properties.Delegates
 
 class ViewDiscActivity: AppCompatActivity() {
 
-    private var discid by Delegates.notNull<Int>()
-    private lateinit var discOwnerId: String
-    private lateinit var discOwnerUUID: UUID
+    private var discid : Long = -1
+    private var discOwnerId: Long = -1
     private lateinit var title : TextView
     private lateinit var price : TextView
     private lateinit var condition : TextView
@@ -41,9 +46,9 @@ class ViewDiscActivity: AppCompatActivity() {
     private lateinit var favorites : Button
     private lateinit var discInfo : Disc
     private lateinit var editDiscInfo: Button
-    private lateinit var favouriteMark: List<FavoriteActivity.FavoriteMark>
-    private lateinit var currentUserId : UUID
-
+    private var currentUserId : Long = -1
+    private lateinit var imageUrl : String
+    private lateinit var imageBitmap : Bitmap
 
     override fun onCreate(savedInstanceState: Bundle?)  {
         super.onCreate(savedInstanceState)
@@ -51,32 +56,37 @@ class ViewDiscActivity: AppCompatActivity() {
 
         val bundle = intent.extras
         if (bundle != null) {
-            discid = bundle.getInt("discid")
-            discOwnerId = bundle.getString("discOwnerId").toString()
+            discid = bundle.getLong("discId")
+            discOwnerId = bundle.getLong("discOwnerId")
         }
 
-        discOwnerUUID = UUID.fromString(discOwnerId)
-
-        val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
-        currentUserId = GlobalVariables.USER_ID!!
+        currentUserId = getCurrentUserId()
 
         suspend fun selectDiscInfoFromDatabase() {
+            discInfo = DiscService().getDisc(discid)!!
+            /*
             withContext(Dispatchers.IO) {
                 discInfo = SupabaseManager.supabase.from("discs").select {
                     filter {
                         eq("discid", discid)
                     }
                 }.decodeSingle()
-                favouriteMark = SupabaseManager.supabase.from("favorite").select {
-                    filter {
-                        eq("user_id", currentUserId)
-                    }
-                }.decodeList()
             }
+            */
         }
 
         runBlocking {
             selectDiscInfoFromDatabase()
+            val intDiscId = discid.toInt()
+            imageUrl = supabase.storage.from("Images").publicUrl("${intDiscId}/image")
+            GlobalScope.launch(Dispatchers.IO) {
+                val bitmap = loadImageFromUrl(imageUrl)
+                bitmap?.let {
+                    withContext(Dispatchers.Main) {
+                        image.setImageBitmap(it)
+                    }
+                }
+            }
         }
 
         title = findViewById(R.id.title)
@@ -108,38 +118,32 @@ class ViewDiscActivity: AppCompatActivity() {
 
          */
 
+
         messageOwner = findViewById(R.id.message_owner)
         messageOwner.setOnClickListener {
-
-            val newConversation = newConversationCreation(
-                currentUserId,
-                false,
-                discOwnerUUID,
-                discInfo.name
-            )
-            val result: Conversation
+            val result : Conversation
 
             runBlocking {
+                result = ConversationService().createConversation(sellerId = discOwnerId, title = discInfo.name)!!
+                /*
                 withContext(Dispatchers.IO) {
                     result =
                         SupabaseManager.supabase.from("conversation").insert(newConversation) {
                             select()
                         }.decodeSingle()
                 }
+                */
             }
 
             val intent = Intent(this, ChatActivity::class.java).apply {
-                putExtra("CHAT_ID", result.conversationid)
+                putExtra("CHAT_ID", result.conversationID)
             }
             startActivity(intent)
             //Toast.makeText(this, "Message owner", Toast.LENGTH_SHORT).show()
         }
 
-        if (currentUserId == discOwnerUUID) {
-            messageOwner.visibility = View.GONE
-        }
-
-        var favorited = favouriteMark.any {mark -> mark.disc_discid == discid }
+        var favorited : Boolean
+        runBlocking { favorited = DiscService().isDiscFavorite(discid)!! }
 
         favorites = findViewById(R.id.favorite)
 
@@ -149,27 +153,17 @@ class ViewDiscActivity: AppCompatActivity() {
 
         favorites.setOnClickListener{
             if(!favorited){
-                val addToFavourite = FavoriteActivity.AddFavoriteMark(discid, currentUserId)
+                runBlocking {
+                    DiscService().addToFavorites(discid)
+                }
                 favorites.setBackgroundResource(R.drawable.baseline_favorite_24)
                 Toast.makeText(this, "Added to favorites", Toast.LENGTH_SHORT).show()
-                runBlocking {
-                    withContext(Dispatchers.IO) {
-                        SupabaseManager.supabase.from("favorite").insert(addToFavourite)
-                    }
-                }
                 favorited = true
             } else {
                 favorites.setBackgroundResource(R.drawable.baseline_favorite_border_24)
                 Toast.makeText(this, "Removed favorites", Toast.LENGTH_SHORT).show()
                 runBlocking {
-                    withContext(Dispatchers.IO) {
-                        SupabaseManager.supabase.from("favorite").delete {
-                            filter {
-                                eq("disc_discid", discid)
-                                eq("user_id", currentUserId)
-                            }
-                        }
-                    }
+                    DiscService().removeFromFavorites(discid)
                 }
                 favorited = false
             }
@@ -183,9 +177,15 @@ class ViewDiscActivity: AppCompatActivity() {
             startActivity(intent)
         }
 
-        if (discInfo.user_id == GlobalVariables.USER_ID) {
+        if (discInfo.userId == currentUserId) {
             editDiscInfo.visibility = View.VISIBLE
         }
 
     }
+
+    private fun getCurrentUserId(): Long {
+        val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        return sharedPreferences.getLong(GlobalVariables.USER_ID, -1)  // Return -1 or another invalid value as default if not found
+    }
+
 }

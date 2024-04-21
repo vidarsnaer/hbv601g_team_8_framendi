@@ -72,5 +72,7 @@ dependencies {
     implementation("io.agora.rtc:voice-sdk:4.2.6")
     implementation("io.github.jan-tennert.supabase:storage-kt:1.0.1")
     implementation("com.github.bumptech.glide:glide:4.12.0")
-
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 }
+

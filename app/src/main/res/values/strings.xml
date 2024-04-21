@@ -6,7 +6,8 @@
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
-
+    <string name="contact_customer_service">Customer service</string>
+    <string name ="radius_all">Radius filter off: displaying discs regardless of seller\'s location. Adjust slider below to refine search radius.</string>
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
         volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
@@ -97,6 +98,10 @@
     <string name="password_should_be_at_least_6_characters">Password should be at least 6 characters</string>
     <string name="filter">Filter</string>
     <string name="clear_filter">Clear</string>
+    <string name="send">Send</string>
+    <string name="cancel">Cancel</string>
+    <string name="type_your_message">Your message here…</string>
+    <string name="type_your_subject">Message subject…</string>
     <string name="join_call">Join Call</string>
     <string name="leave_call">Leave Call</string>
     <string name="send">Send</string>

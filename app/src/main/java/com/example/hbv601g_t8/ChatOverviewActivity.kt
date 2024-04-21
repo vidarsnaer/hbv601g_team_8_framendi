@@ -1,5 +1,6 @@
 package com.example.hbv601g_t8
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -9,7 +10,7 @@ import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import java.time.ZonedDateTime
+
 
 class ChatOverviewActivity : AppCompatActivity() {
 
@@ -51,6 +52,26 @@ class ChatOverviewActivity : AppCompatActivity() {
         withContext(Dispatchers.IO) {
             conversations = SupabaseManager.supabase.from("conversation").select().decodeList()
         }
+    }
+
+    suspend fun getConversation(conversationId: Long): Conversation? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = RetrofitClient.networkingApi.getConversation(conversationId).execute()
+                if (response.isSuccessful) {
+                    response.body()
+                } else {
+                    null
+                }
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
+    private fun getCurrentUserId(): Long {
+        val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        return sharedPreferences.getLong(GlobalVariables.USER_ID, -1)  // Return -1 or another invalid value as default if not found
     }
 
 }

@@ -3,22 +3,13 @@ package com.example.hbv601g_t8
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.ViewUtils
-import com.example.hbv601g_t8.databinding.ActivityMainBinding
-import io.github.jan.supabase.gotrue.auth
-import io.github.jan.supabase.gotrue.providers.builtin.Email
-import io.github.jan.supabase.postgrest.from
-import io.github.jan.supabase.postgrest.query.Columns
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.put
+import kotlinx.coroutines.launch
 
 class RegisterActivity :AppCompatActivity(){
 
@@ -30,20 +21,17 @@ class RegisterActivity :AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.register)
 
-
-
         newUsername = findViewById(R.id.username)
         newEmail = findViewById(R.id.email)
         newPassword = findViewById(R.id.password)
         registerButton = findViewById(R.id.registerButton)
-
 
         registerButton.setOnClickListener {
 
             val newUserUsername = newUsername.text.toString()
             val newUserEmail = newEmail.text.toString()
             val newUserPassword = newPassword.text.toString()
-
+/*
             try {
                 runBlocking {
                     withContext(Dispatchers.IO) {
@@ -66,9 +54,39 @@ class RegisterActivity :AppCompatActivity(){
                 // For example, display an error message or log the exception
                 println("Error occurred during sign-in: ${e.message}")
             }
+ */
+            registerUser(newUserUsername, newUserEmail, newUserPassword)
         }
     }
 
+    private fun registerUser(username: String, email: String, password: String) {
+        val user = User(name = username, email = email, password = password)
+
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                val registeredUser = UserService().signupUser(user)
+                if (registeredUser != null) {
+                    Toast.makeText(applicationContext, "Registration Successful! User ID: ${registeredUser.id}", Toast.LENGTH_SHORT).show()
+                    saveUser(registeredUser.id!!) // Save the user ID locally
+                    redirectToLogin()
+                } else {
+                    Toast.makeText(applicationContext, "Registration Failed!", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(applicationContext, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
+    private fun saveUser(userId: Long) {
+        val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putLong(GlobalVariables.USER_ID, userId)
+        editor.apply()
+    }
+
+    /*
     /**
      * Save user to sharepoint, which will later be a database
      */
@@ -81,6 +99,8 @@ class RegisterActivity :AppCompatActivity(){
         editor.putString(GlobalVariables.USER_ID.toString(), userid)
         editor.apply()
     }
+    */
+
 
     /**
      * Opens the DiscActivity and finishes the RegisterActivity
@@ -90,6 +110,5 @@ class RegisterActivity :AppCompatActivity(){
         val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
         startActivity(intent)
         finish()
-
     }
 }
