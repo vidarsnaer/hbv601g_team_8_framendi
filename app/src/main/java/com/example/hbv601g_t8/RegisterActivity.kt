@@ -96,7 +96,7 @@ class RegisterActivity :AppCompatActivity(){
         val sharedPreferences = context.getSharedPreferences("UserData", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
-        editor.putString(GlobalVariables.USER_ID, userid)
+        editor.putString(GlobalVariables.USER_ID.toString(), userid)
         editor.apply()
     }
     */

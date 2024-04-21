@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -11,6 +12,13 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.example.hbv601g_t8.SupabaseManager.supabase
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.gotrue.providers.builtin.Email
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+
 
 class LoginActivity : AppCompatActivity() {
 
@@ -67,6 +75,7 @@ class LoginActivity : AppCompatActivity() {
         editor.putBoolean(GlobalVariables.KEY_IS_LOGGED_IN, isLoggedIn)
         editor.apply()
     }
+
 
     private fun redirectToHome() {
         val intent = Intent(this, DiscActivity::class.java)

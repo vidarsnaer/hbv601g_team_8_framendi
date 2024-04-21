@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.UUID
 
 class FavoriteActivity : AppCompatActivity() {
 
@@ -62,23 +63,6 @@ class FavoriteActivity : AppCompatActivity() {
             }
         }
 
-        /*
-        runBlocking {
-            withContext(Dispatchers.IO) {
-                allDiscsList = SupabaseManager.supabase.from("discs").select().decodeList()
-                favoriteMark = SupabaseManager.supabase.from("favorite").select {
-                    filter {
-                        eq("user_id", currentUserId)
-                    }
-                }.decodeList()
-            }
-            getImages()
-        }
-
-        favoriteDiscs = allDiscsList.filter {
-            disc -> favoriteMark.any { mark -> mark.discId == disc.discId }
-        }
-         */
         runBlocking {
             favoriteDiscs = DiscService().getFavoriteDiscs()!!
         }

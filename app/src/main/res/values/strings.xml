@@ -102,6 +102,9 @@
     <string name="cancel">Cancel</string>
     <string name="type_your_message">Your message here…</string>
     <string name="type_your_subject">Message subject…</string>
+    <string name="join_call">Join Call</string>
+    <string name="leave_call">Leave Call</string>
+    <string name="send">Send</string>
     <string-array name="filter_states">
         <item>Any</item>
         <item>New</item>

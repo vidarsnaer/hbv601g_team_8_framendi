@@ -5,9 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -28,6 +26,12 @@ import kotlinx.coroutines.runBlocking
 import java.io.ByteArrayOutputStream
 import java.io.File
 import kotlin.random.Random
+import io.github.jan.supabase.postgrest.from
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.util.UUID
 
 class NewDiscActivity : AppCompatActivity() {
 
@@ -66,9 +70,7 @@ class NewDiscActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.newdisc)
 
-
         currentUserId = getCurrentUserId()
-
 
         buttonPhoto = findViewById(R.id.buttonPhoto)
         btnChoose = findViewById(R.id.btnChoose)
@@ -81,7 +83,6 @@ class NewDiscActivity : AppCompatActivity() {
         quantityText = findViewById(R.id.newDiscQuantity)
 
         buttonPhoto.setOnClickListener {
-            imageAdded = 1
             val takePhotoIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             filePhoto = getPhotoFile(FILE_NAME)
             val providerFile = FileProvider.getUriForFile(this, "com.example.androidcamera.fileprovider", filePhoto)
@@ -150,14 +151,6 @@ class NewDiscActivity : AppCompatActivity() {
         suspend fun insertProductIntoSupabase(newDisc: Disc) {
             val result = DiscService().addDisc(newDisc)!!
             discId = result.discId!!
-            /*
-            withContext(Dispatchers.IO) {
-                val result = supabase.from("discs").insert(newDiscCreation) {
-                    select()
-                }.decodeSingle<Disc>()
-                discId = result.discid
-            }
-            */
         }
 
         submitNewDiscButton.setOnClickListener {
@@ -173,30 +166,17 @@ class NewDiscActivity : AppCompatActivity() {
 
             val newDisc = Disc(name = title, description = description, type = type, condition = state, colour = color, price = price, userId = currentUserId, latitude = latitude, longitude = longitude)
 
-            if(imageAdded == 1){
-                val imageInBytes = imageToBitmap(viewImage)
-                runBlocking {
-                    val bucket = supabase.storage.from("Images")
-                    bucket.upload("$discId/image", imageInBytes, upsert = false)
-                }
-            }
-
             runBlocking {
                 insertProductIntoSupabase(newDisc)
             }
 
             Toast.makeText(this, "Disc successfully added", Toast.LENGTH_LONG).show()
+
+            val intent = Intent(this@NewDiscActivity, DiscActivity::class.java)
+            startActivity(intent)
+
         }
     }
-
-    private fun imageToBitmap(image: ImageView): ByteArray {
-        val bitmap = (image.drawable as BitmapDrawable).bitmap
-        val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
-
-        return stream.toByteArray()
-    }
-
 
     /**
      * Creates a temporary file to store the photo.
@@ -236,7 +216,6 @@ class NewDiscActivity : AppCompatActivity() {
     private fun chooseImageGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
-        imageAdded = 1
         startActivityForResult(intent, IMAGE_CHOOSE)
     }
 

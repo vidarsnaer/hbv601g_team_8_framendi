@@ -4,13 +4,17 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.example.hbv601g_t8.R
 import com.example.hbv601g_t8.databinding.ChatItemBinding
+import java.util.UUID
+
 
 class ChatAdapter(private val dataset: List<Message>, private val currentUserId: Long) :
     RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
 
     class ChatViewHolder(private val binding: ChatItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message, currentUserId: Long) {
+
             binding.messageText.text = message.message
             val layoutParams = binding.messageText.layoutParams as ConstraintLayout.LayoutParams
 

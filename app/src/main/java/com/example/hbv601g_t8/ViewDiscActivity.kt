@@ -13,15 +13,21 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.hbv601g_t8.SupabaseManager.supabase
 import io.github.jan.supabase.storage.storage
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import com.example.hbv601g_t8.SupabaseManager.supabase
+import io.github.jan.supabase.gotrue.auth
+import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.Columns
+import io.ktor.util.Identity.decode
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
-
+import kotlin.properties.Delegates
 
 class ViewDiscActivity: AppCompatActivity() {
 
@@ -40,12 +46,9 @@ class ViewDiscActivity: AppCompatActivity() {
     private lateinit var favorites : Button
     private lateinit var discInfo : Disc
     private lateinit var editDiscInfo: Button
-
     private var currentUserId : Long = -1
     private lateinit var imageUrl : String
     private lateinit var imageBitmap : Bitmap
-
-
 
     override fun onCreate(savedInstanceState: Bundle?)  {
         super.onCreate(savedInstanceState)
@@ -72,22 +75,6 @@ class ViewDiscActivity: AppCompatActivity() {
             */
         }
 
-        suspend fun loadImageFromUrl(imageUrl: String): Bitmap? {
-            return try {
-                val url = URL(imageUrl)
-                val connection = url.openConnection() as HttpURLConnection
-                connection.doInput = true
-                connection.connect()
-                val input = connection.inputStream
-                BitmapFactory.decodeStream(input)
-            } catch (e: IOException) {
-                e.printStackTrace()
-                null
-            }
-        }
-
-        image = findViewById(R.id.image)
-
         runBlocking {
             selectDiscInfoFromDatabase()
             val intDiscId = discid.toInt()
@@ -102,7 +89,6 @@ class ViewDiscActivity: AppCompatActivity() {
             }
         }
 
-
         title = findViewById(R.id.title)
         title.text = discInfo.name
         price = findViewById(R.id.price)
@@ -115,8 +101,8 @@ class ViewDiscActivity: AppCompatActivity() {
         color.text = discInfo.colour
         description = findViewById(R.id.description)
         description.text = discInfo.description
-
-
+        image = findViewById(R.id.image)
+        image.setImageResource(R.drawable.frisbee)
 
         /*
         nextImage = findViewById(R.id.next_image)
@@ -128,7 +114,9 @@ class ViewDiscActivity: AppCompatActivity() {
 
         prevImage.setOnClickListener{
             Toast.makeText(this, "Previous image", Toast.LENGTH_SHORT).show()
-        }*/
+        }
+
+         */
 
 
         messageOwner = findViewById(R.id.message_owner)
@@ -139,9 +127,10 @@ class ViewDiscActivity: AppCompatActivity() {
                 result = ConversationService().createConversation(sellerId = discOwnerId, title = discInfo.name)!!
                 /*
                 withContext(Dispatchers.IO) {
-                    result = SupabaseManager.supabase.from("conversation").insert(newConversation) {
-                        select()
-                    }.decodeSingle()
+                    result =
+                        SupabaseManager.supabase.from("conversation").insert(newConversation) {
+                            select()
+                        }.decodeSingle()
                 }
                 */
             }

@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.UUID
 
 class MyDiscsActivity : AppCompatActivity() {
     private lateinit var myDiscsList: List<Disc>
@@ -76,15 +77,6 @@ class MyDiscsActivity : AppCompatActivity() {
 
     private suspend fun selectMyDiscsFromDatabase () {
         DiscService().getMyDiscs(currentUserId)
-        /*
-        withContext(Dispatchers.IO) {
-            myDiscsList = SupabaseManager.supabase.from("discs").select {
-                filter {
-                    eq("user_id", currentUserId)
-                }
-            }.decodeList<Disc>()
-        }
-        */
     }
 
     private fun getCurrentUserId(): Long {

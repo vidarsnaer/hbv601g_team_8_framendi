@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.time.ZonedDateTime
+import io.agora.rtc2.RtcEngine
 
 class ChatActivity : AppCompatActivity() {
 
@@ -22,8 +23,10 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var chatMessages : List<Message>
     private lateinit var newMessage: Message
     private var chatId: Long = 0
-
     private var currentUserId: Long = -1
+    private lateinit var callButton: MaterialButton
+    private lateinit var agoraManager: AgoraManager
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +38,8 @@ class ChatActivity : AppCompatActivity() {
         if (bundle != null) {
             chatId = bundle.getLong("CHAT_ID")
         }
+
+        agoraManager = AgoraManager(this)
 
         runBlocking {
             getMessagesFromDatabase()
@@ -49,6 +54,7 @@ class ChatActivity : AppCompatActivity() {
 
         sendButton = findViewById(R.id.sendButton)
         messageInput = findViewById(R.id.messageInput)
+        callButton = findViewById(R.id.join_call_button)
 
         sendButton.setOnClickListener {
 
@@ -56,10 +62,8 @@ class ChatActivity : AppCompatActivity() {
 
             if (messageText.isNotEmpty()) {
                 newMessage = Message(conversationID = chatId, message = messageText, read = false, senderID = currentUserId, sentAt = ZonedDateTime.now().toString())
-
                 runBlocking {
                     ConversationService().sendMessage(conversationId = chatId, messageText = messageText)
-                    //sendMessageToDatabase()
                     getMessagesFromDatabase()
                 }
 
@@ -71,32 +75,29 @@ class ChatActivity : AppCompatActivity() {
                 (recyclerView.adapter as? ChatAdapter)?.notifyItemInserted(chatMessages.size - 1)
                 recyclerView.scrollToPosition(chatMessages.size - 1)  // Scroll to the new message
                 messageInput.text?.clear()
-                // TODO: Implement the logic to send the message to the backend and update the UI accordingly
             } else {
                 Toast.makeText(this, "Message Must Not Be Empty", Toast.LENGTH_SHORT).show()
             }
+        }
 
+        callButton.setOnClickListener {
+
+            if (callButton.text.toString() == "Join Call") {
+                callButton.setText(R.string.leave_call)
+                callButton.setTextColor(getColor(R.color.danger))
+                agoraManager.joinChannel("testing", "007eJxTYPDVPG+9e80Kg6lHD/Z07jZ+l7/nfHnl8lCtQJ4jFupZc64oMJgampkaWxilpRgmJpsYJhommpoaWqalGKclWRoYJZqknAiVTWsIZGSQCvvKyMgAgSA+O0NJanFJZl46AwMA0+cg2w==")
+            } else {
+                callButton.setText(R.string.join_call)
+                callButton.setTextColor(getColor(R.color.blue))
+                agoraManager.leaveChannel()
+            }
         }
     }
 
     private suspend fun getMessagesFromDatabase () {
         chatMessages = ConversationService().getMessages(conversationId = chatId)!!
-        /*
-        withContext(Dispatchers.IO) {
-            chatMessages = SupabaseManager.supabase.from("message").select {
-                filter {
-                    eq("conversationid", chatId)
-                }
-            }.decodeList()
-        }
-         */
     }
 
-    private suspend fun sendMessageToDatabase () {
-        withContext(Dispatchers.IO) {
-            SupabaseManager.supabase.from("message").insert(newMessage)
-        }
-    }
 
     private fun getCurrentUserId(): Long {
         val sharedPreferences = getSharedPreferences("UserData", Context.MODE_PRIVATE)

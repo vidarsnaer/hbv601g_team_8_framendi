@@ -13,9 +13,14 @@
         android:layout_marginBottom="60dp"
         android:padding="12dp"
         app:layout_constraintBottom_toTopOf="@id/sendLayout"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+
 
     <LinearLayout
         android:id="@+id/sendLayout"
@@ -23,6 +28,14 @@
         android:layout_height="60dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/join_call_button"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:backgroundTint="@color/white"
+            android:text="@string/join_call"
+            android:textColor="@color/blue" />
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/messageInput"
@@ -34,6 +47,6 @@
             android:id="@+id/sendButton"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Send" />
+            android:text="@string/send" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

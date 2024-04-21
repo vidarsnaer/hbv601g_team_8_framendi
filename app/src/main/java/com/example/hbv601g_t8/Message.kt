@@ -1,6 +1,7 @@
 package com.example.hbv601g_t8
 
 import kotlinx.serialization.Serializable
+import java.util.UUID
 
 @Serializable
 data class Message(
@@ -11,3 +12,4 @@ data class Message(
     val sentAt: String,  // TODO: Make sure the date format matches between frontend and backend
     val read: Boolean
 )
+

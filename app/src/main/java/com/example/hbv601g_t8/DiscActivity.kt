@@ -1,5 +1,8 @@
 package com.example.hbv601g_t8
 
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -18,6 +21,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -25,11 +29,13 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.hbv601g_t8.GlobalVariables.CUSTOMER_SERVICE_ID
 import com.example.hbv601g_t8.databinding.ActivityMainBinding
 import com.google.android.material.button.MaterialButton
+import io.agora.rtc2.IRtcEngineEventHandler
 import io.github.jan.supabase.gotrue.auth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class DiscActivity : AppCompatActivity(), FilterListener {
 
@@ -52,8 +58,26 @@ class DiscActivity : AppCompatActivity(), FilterListener {
         val prefs = getSharedPreferences(GlobalVariables.PREFS_NAME, Context.MODE_PRIVATE)
         currentUserId = getCurrentUserId()
 
+        val REQUESTED_PERMISSIONS = arrayOf(
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.CAMERA
+        )
+
+        /*
+        if (GlobalVariables.USER_ID == null) {
+            val user = supabase.auth.currentUserOrNull()
+            val userid = user?.id
+            println(userid)
+            val uuid = UUID.fromString(userid)
+            GlobalVariables.USER_ID = uuid
+        }
+
+         */
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ActivityCompat.requestPermissions(this, REQUESTED_PERMISSIONS, 22)
 
         // Instantiate a PopupWindow
         val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -139,6 +163,7 @@ class DiscActivity : AppCompatActivity(), FilterListener {
                 // Fragment not found
                 println("Fragment: DiscListFragment not found in clearFilterButton on click listener")
             }
+
         }
 
         binding.fab.setOnClickListener {

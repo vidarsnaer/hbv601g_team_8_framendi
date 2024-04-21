@@ -181,6 +181,14 @@ class DiscListFragment : Fragment() {
             ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
                 // Fetch the location once permission is confirmed
                 userLocation = locationManager.getLastKnownLocation(provider)
+                var userLatitude = userLocation?.latitude
+                var userLongitude = userLocation?.longitude
+                if (userLatitude != null) {
+                    GlobalVariables.USER_LATITUDE = userLatitude
+                }
+                if (userLongitude != null) {
+                    GlobalVariables.USER_LONGITUDE = userLongitude
+                }
                 updateSliderMaxDistance()
             } else -> {
                 // TODO: Consider handling the case where location is null?
